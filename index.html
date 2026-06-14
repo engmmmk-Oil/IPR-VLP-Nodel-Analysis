@@ -3,768 +3,888 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>APC Nodal Analysis Tool | IPR–VLP System</title>
+<title>APC | IPR–VLP Nodal Analysis Tool</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
 <style>
-  :root {
-    --apc-dark:    #2B2118;
-    --apc-brown:   #4A2F1A;
-    --apc-orange:  #C85A00;
-    --apc-amber:   #E07820;
-    --apc-gold:    #F0A030;
-    --apc-cream:   #FDF6ED;
-    --apc-light:   #FAF0E0;
-    --apc-border:  #D4B896;
-    --apc-muted:   #8A7060;
-    --apc-green:   #2E6B3E;
-    --apc-red:     #8B1A1A;
-    --apc-blue:    #1A3A5C;
-    --apc-purple:  #4A2060;
-    --text-main:   #1E1410;
-    --text-sub:    #5A4030;
-    --card-bg:     #FFFFFF;
-    --section-bg:  #FDF6ED;
-  }
+/* ── DESIGN TOKENS ── */
+:root {
+  --slate:      #4A4A4A;
+  --slate-mid:  #6B6B6B;
+  --slate-lt:   #9B9B9B;
+  --gold:       #B8964A;
+  --gold-lt:    #D4B06A;
+  --gold-pale:  #F5EDD8;
+  --gold-wash:  #FAF5E8;
+  --white:      #FFFFFF;
+  --off-white:  #F8F7F4;
+  --border:     #E2D9C8;
+  --border-lt:  #EDE8DC;
+  --text:       #2A2A2A;
+  --text-sub:   #5A5A5A;
+  --text-muted: #8A8A8A;
+  --green:      #2E6B3E;
+  --red:        #8B1A1A;
+  --blue:       #1A3A6A;
+  --amber:      #B86B00;
+  --orange:     #C85A00;
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md:  0 2px 8px rgba(0,0,0,0.10);
+  --shadow-lg:  0 4px 16px rgba(0,0,0,0.12);
+  --radius:     6px;
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: var(--apc-cream);
-    color: var(--text-main);
-    min-height: 100vh;
-  }
+body {
+  font-family: 'Segoe UI', system-ui, Arial, sans-serif;
+  background: var(--off-white);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 13px;
+  line-height: 1.5;
+}
 
-  /* ── HEADER ── */
-  .site-header {
-    background: linear-gradient(135deg, var(--apc-dark) 0%, var(--apc-brown) 60%, var(--apc-orange) 100%);
-    color: #fff;
-    padding: 0;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.4);
-  }
-  .header-inner {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 18px 28px 14px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
-  .header-logo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    min-width: 72px;
-  }
-  .logo-circle {
-    width: 52px; height: 52px;
-    border: 3px solid var(--apc-gold);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: 18px; color: var(--apc-gold);
-    letter-spacing: 1px;
-  }
-  .logo-sub { font-size: 9px; color: var(--apc-gold); letter-spacing: 2px; text-transform: uppercase; }
-  .header-text { flex: 1; }
-  .header-text h1 { font-size: 22px; font-weight: 700; letter-spacing: 0.5px; line-height: 1.2; }
-  .header-text .subtitle { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 4px; letter-spacing: 0.8px; }
-  .header-badge {
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 6px;
-    padding: 6px 14px;
-    font-size: 11px;
-    color: rgba(255,255,255,0.9);
-    text-align: center;
-    line-height: 1.5;
-  }
+/* ══════════════════════════════════ HEADER ══ */
+.site-header {
+  background: var(--white);
+  border-bottom: 3px solid var(--gold);
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 12px 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.header-logo img {
+  height: 56px;
+  width: auto;
+  display: block;
+}
+.header-divider {
+  width: 1px;
+  height: 44px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+.header-text { flex: 1; }
+.header-text h1 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--slate);
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+}
+.header-text .tagline {
+  font-size: 11px;
+  color: var(--gold);
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+.header-badges { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.header-badge {
+  background: var(--gold-wash);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 10px;
+  color: var(--slate-mid);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.header-badge.gold { background: var(--gold); color: var(--white); border-color: var(--gold); }
 
-  /* ── TABS ── */
-  .tab-bar {
-    background: var(--apc-brown);
-    display: flex;
-    gap: 2px;
-    padding: 0 28px;
-    max-width: 1400px;
-    margin: 0 auto;
-    overflow-x: auto;
-  }
-  .tab-btn {
-    background: transparent;
-    border: none;
-    color: rgba(255,255,255,0.65);
-    padding: 12px 18px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    border-bottom: 3px solid transparent;
-    white-space: nowrap;
-    transition: all 0.2s;
-    letter-spacing: 0.5px;
-  }
-  .tab-btn:hover { color: #fff; background: rgba(255,255,255,0.08); }
-  .tab-btn.active {
-    color: var(--apc-gold);
-    border-bottom-color: var(--apc-gold);
-    background: rgba(255,255,255,0.06);
-  }
-  .tab-num {
-    display: inline-block;
-    background: var(--apc-orange);
-    color: #fff;
-    border-radius: 50%;
-    width: 18px; height: 18px;
-    line-height: 18px;
-    text-align: center;
-    font-size: 10px;
-    margin-right: 6px;
-  }
-  .tab-btn.active .tab-num { background: var(--apc-gold); color: var(--apc-dark); }
+/* ══════════════════════════════════ TABS ══ */
+.tab-bar-wrap {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.tab-bar {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 28px;
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+}
+.tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--text-muted);
+  padding: 11px 18px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.tab-btn:hover { color: var(--slate); background: var(--gold-wash); }
+.tab-btn.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+.tab-icon {
+  width: 20px; height: 20px;
+  background: var(--border-lt);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: var(--slate-mid);
+  flex-shrink: 0;
+}
+.tab-btn.active .tab-icon { background: var(--gold); color: var(--white); }
 
-  /* ── MAIN CONTENT ── */
-  .main { max-width: 1400px; margin: 0 auto; padding: 24px 28px 40px; }
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
+/* ══════════════════════════════════ LAYOUT ══ */
+.main { max-width: 1440px; margin: 0 auto; padding: 20px 28px 48px; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
 
-  /* ── CARDS ── */
-  .card {
-    background: var(--card-bg);
-    border: 1px solid var(--apc-border);
-    border-radius: 8px;
-    padding: 20px 24px;
-    margin-bottom: 20px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  }
-  .card-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--apc-orange);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 14px;
-    border-bottom: 2px solid var(--apc-border);
-    padding-bottom: 8px;
-  }
+.grid-panel { display: grid; grid-template-columns: 320px 1fr; gap: 18px; align-items: start; }
+.grid-panel-lg { display: grid; grid-template-columns: 360px 1fr; gap: 18px; align-items: start; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
 
-  /* ── GRID LAYOUTS ── */
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-  .grid-panel { display: grid; grid-template-columns: 340px 1fr; gap: 20px; align-items: start; }
-  .grid-panel-wide { display: grid; grid-template-columns: 380px 1fr; gap: 20px; align-items: start; }
+/* ══════════════════════════════════ CARDS ══ */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.card-header {
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid var(--border-lt);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-header-icon {
+  width: 24px; height: 24px;
+  background: var(--gold-pale);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; flex-shrink: 0;
+}
+.card-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--slate);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.card-body { padding: 14px 16px; }
+.card-body-sm { padding: 10px 14px; }
 
-  /* ── INPUT CONTROLS ── */
-  .input-group { margin-bottom: 14px; }
-  .input-group label {
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-sub);
-    margin-bottom: 5px;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-  }
-  .input-group label span {
-    font-weight: 400;
-    color: var(--apc-muted);
-    text-transform: none;
-    letter-spacing: 0;
-    font-size: 10px;
-  }
-  .input-group input[type="number"],
-  .input-group input[type="text"],
-  .input-group select {
-    width: 100%;
-    padding: 8px 10px;
-    border: 1.5px solid var(--apc-border);
-    border-radius: 5px;
-    font-size: 13px;
-    color: var(--text-main);
-    background: #fff;
-    transition: border-color 0.2s;
-  }
-  .input-group input:focus, .input-group select:focus {
-    outline: none;
-    border-color: var(--apc-orange);
-    box-shadow: 0 0 0 3px rgba(200,90,0,0.1);
-  }
-  .input-group input[type="range"] {
-    width: 100%;
-    accent-color: var(--apc-orange);
-    margin-top: 4px;
-  }
-  .range-val {
-    display: inline-block;
-    background: var(--apc-orange);
-    color: #fff;
-    border-radius: 4px;
-    padding: 2px 8px;
-    font-size: 12px;
-    font-weight: 700;
-    margin-top: 4px;
-  }
+/* ══════════════════════════════════ INPUTS ══ */
+.inp-group { margin-bottom: 11px; }
+.inp-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-sub);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 4px;
+}
+.inp-unit {
+  font-weight: 400;
+  color: var(--text-muted);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 10px;
+}
+.inp-group input[type="number"],
+.inp-group input[type="text"],
+.inp-group select {
+  width: 100%;
+  padding: 7px 9px;
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--text);
+  background: var(--white);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  font-family: inherit;
+}
+.inp-group input:focus,
+.inp-group select:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(184,150,74,0.15);
+}
+.inp-group input[type="range"] {
+  width: 100%; accent-color: var(--gold); margin-top: 3px; cursor: pointer;
+}
+.range-display {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--white);
+  border-radius: 3px;
+  padding: 1px 7px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 3px;
+}
+.inp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.inp-divider {
+  border: none; border-top: 1px solid var(--border-lt);
+  margin: 10px 0;
+}
 
-  /* ── BUTTONS ── */
-  .btn {
-    display: inline-block;
-    padding: 10px 22px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-    letter-spacing: 0.3px;
-  }
-  .btn-primary {
-    background: linear-gradient(135deg, var(--apc-orange), var(--apc-amber));
-    color: #fff;
-    box-shadow: 0 2px 8px rgba(200,90,0,0.3);
-  }
-  .btn-primary:hover { background: linear-gradient(135deg, #B04E00, var(--apc-orange)); transform: translateY(-1px); }
-  .btn-secondary {
-    background: var(--apc-brown);
-    color: #fff;
-  }
-  .btn-secondary:hover { background: var(--apc-dark); }
-  .btn-sm { padding: 6px 14px; font-size: 11px; }
-  .btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+/* ══════════════════════════════════ BUTTONS ══ */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 18px;
+  border-radius: 4px;
+  font-size: 12px; font-weight: 700;
+  cursor: pointer; border: none;
+  transition: all 0.15s;
+  font-family: inherit;
+  letter-spacing: 0.2px;
+}
+.btn-gold {
+  background: var(--gold);
+  color: var(--white);
+  box-shadow: 0 2px 6px rgba(184,150,74,0.3);
+}
+.btn-gold:hover { background: #A07A30; transform: translateY(-1px); }
+.btn-slate { background: var(--slate); color: var(--white); }
+.btn-slate:hover { background: #333; }
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid var(--border);
+  color: var(--slate-mid);
+}
+.btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+.btn-sm { padding: 5px 12px; font-size: 11px; }
+.btn-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
 
-  /* ── RESULT BOX ── */
-  .result-box {
-    background: linear-gradient(135deg, var(--apc-dark), var(--apc-brown));
-    color: #fff;
-    border-radius: 8px;
-    padding: 16px 20px;
-    margin-top: 16px;
-  }
-  .result-box h4 { font-size: 11px; color: var(--apc-gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
-  .result-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    font-size: 13px;
-  }
-  .result-row:last-child { border-bottom: none; }
-  .result-label { color: rgba(255,255,255,0.7); }
-  .result-value { font-weight: 700; color: var(--apc-gold); font-size: 14px; }
-  .result-value.good { color: #6DCF8A; }
-  .result-value.warn { color: #FFD166; }
-  .result-value.bad { color: #EF6C6C; }
+/* ══════════════════════════════════ RESULT BOX ══ */
+.result-panel {
+  background: linear-gradient(135deg, var(--slate) 0%, #3A3A3A 100%);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-top: 14px;
+}
+.result-panel-title {
+  font-size: 10px; font-weight: 700; color: var(--gold-lt);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+}
+.result-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.08);
+  font-size: 12px;
+}
+.result-row:last-child { border-bottom: none; }
+.result-label { color: rgba(255,255,255,0.65); }
+.result-value { font-weight: 700; color: var(--gold-lt); font-size: 13px; }
+.result-value.ok   { color: #6DCF8A; }
+.result-value.warn { color: #FFD166; }
+.result-value.bad  { color: #EF6C6C; }
+.result-divider { border: none; border-top: 1px solid rgba(255,255,255,0.12); margin: 8px 0; }
 
-  /* ── FLAG / ALERT ── */
-  .flag {
-    border-radius: 6px;
-    padding: 10px 14px;
-    font-size: 12px;
-    margin-top: 10px;
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-  }
-  .flag-icon { font-size: 16px; flex-shrink: 0; margin-top: -1px; }
-  .flag-green { background: #EAF7EE; border-left: 4px solid var(--apc-green); color: #1A4A28; }
-  .flag-amber { background: #FFF8E6; border-left: 4px solid var(--apc-gold); color: #5A4000; }
-  .flag-red   { background: #FDEAEA; border-left: 4px solid var(--apc-red);   color: #5A0000; }
-  .flag-blue  { background: #EAF0FA; border-left: 4px solid var(--apc-blue);  color: #0A2040; }
+/* ══════════════════════════════════ FLAGS ══ */
+.flag {
+  border-radius: 4px; padding: 9px 12px;
+  font-size: 11px; margin-top: 8px;
+  display: flex; align-items: flex-start; gap: 8px; line-height: 1.5;
+}
+.flag-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.flag-green { background: #EAF7EE; border-left: 3px solid var(--green); color: #1A4028; }
+.flag-amber { background: #FFF8E6; border-left: 3px solid #D4900A; color: #4A3000; }
+.flag-red   { background: #FDEAEA; border-left: 3px solid var(--red); color: #4A0000; }
+.flag-blue  { background: #EAF0FA; border-left: 3px solid var(--blue); color: #0A2040; }
+.flag-gold  { background: var(--gold-pale); border-left: 3px solid var(--gold); color: #4A3000; }
 
-  /* ── THEORY STYLES ── */
-  .eq-box {
-    background: #F5F0FF;
-    border: 1px solid #C8B8E8;
-    border-left: 4px solid var(--apc-purple);
-    border-radius: 6px;
-    padding: 12px 16px;
-    margin: 10px 0;
-    font-family: 'Courier New', monospace;
-    font-size: 13px;
-    color: var(--apc-purple);
-  }
-  .theory-section { margin-bottom: 24px; }
-  .theory-section h3 {
-    font-size: 14px;
-    color: var(--apc-brown);
-    font-weight: 700;
-    margin-bottom: 10px;
-    padding-left: 10px;
-    border-left: 3px solid var(--apc-orange);
-  }
-  .theory-section p { font-size: 13px; color: var(--text-sub); line-height: 1.7; margin-bottom: 8px; }
+/* ══════════════════════════════════ THEORY ══ */
+.eq-box {
+  background: #F0EAFA;
+  border: 1px solid #C8B8E8;
+  border-left: 3px solid #7B5EA7;
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin: 8px 0;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #4A2080;
+  line-height: 1.6;
+}
+.theory-h3 {
+  font-size: 12px; font-weight: 700; color: var(--slate);
+  margin: 12px 0 6px;
+  padding-left: 8px;
+  border-left: 3px solid var(--gold);
+}
+.theory-p { font-size: 12px; color: var(--text-sub); line-height: 1.7; margin-bottom: 6px; }
 
-  /* ── TABLE ── */
-  .data-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
-  .data-table th {
-    background: var(--apc-brown);
-    color: #fff;
-    padding: 8px 10px;
-    text-align: left;
-    font-size: 11px;
-    letter-spacing: 0.5px;
-  }
-  .data-table td { padding: 7px 10px; border-bottom: 1px solid #EEE; }
-  .data-table tr:nth-child(even) td { background: #FAF5EE; }
-  .data-table tr:hover td { background: #FFF0E0; }
+/* ══════════════════════════════════ TABLES ══ */
+.data-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.data-table th {
+  background: var(--slate); color: var(--white);
+  padding: 7px 10px; text-align: left;
+  font-size: 10px; letter-spacing: 0.5px; font-weight: 600;
+}
+.data-table td { padding: 6px 10px; border-bottom: 1px solid var(--border-lt); }
+.data-table tr:nth-child(even) td { background: var(--gold-wash); }
+.data-table tr:hover td { background: var(--gold-pale); }
 
-  /* ── PRODUCTION DATA ENTRY (Tab 5) ── */
-  .test-point-row {
-    display: grid;
-    grid-template-columns: 40px 1fr 1fr 40px;
-    gap: 8px;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-  .test-point-row .pt-label {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--apc-muted);
-    text-align: center;
-  }
-  .test-point-row input {
-    padding: 7px 10px;
-    border: 1.5px solid var(--apc-border);
-    border-radius: 5px;
-    font-size: 13px;
-    width: 100%;
-  }
-  .test-point-row input:focus {
-    outline: none;
-    border-color: var(--apc-orange);
-  }
-  .pt-remove {
-    background: var(--apc-red);
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    width: 28px; height: 28px;
-    cursor: pointer;
-    font-size: 14px;
-    line-height: 28px;
-    text-align: center;
-  }
+.sens-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.sens-table th {
+  background: var(--slate); color: var(--white);
+  padding: 6px 8px; font-size: 10px; text-align: center;
+}
+.sens-table td { padding: 5px 8px; border-bottom: 1px solid var(--border-lt); text-align: center; }
+.sens-table tr:nth-child(even) td { background: var(--gold-wash); }
+.sens-table tr.highlight td { background: var(--gold-pale); font-weight: 700; }
 
-  /* ── PUMP CURVE SECTION ── */
-  .pump-model-badge {
-    display: inline-block;
-    background: var(--apc-dark);
-    color: var(--apc-gold);
-    border-radius: 4px;
-    padding: 3px 10px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    margin-bottom: 10px;
-  }
+/* ══════════════════════════════════ PUMP BADGE ══ */
+.pump-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--slate); color: var(--gold-lt);
+  border-radius: 4px; padding: 4px 10px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
+  margin-bottom: 10px;
+}
 
-  /* ── SECTION DIVIDER ── */
-  .divider {
-    border: none;
-    border-top: 1px solid var(--apc-border);
-    margin: 20px 0;
-  }
+/* ══════════════════════════════════ MODEL SELECT ══ */
+.model-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.model-pill {
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 10px; font-weight: 700; cursor: pointer;
+  border: 1.5px solid var(--border);
+  background: var(--white); color: var(--slate-mid);
+  transition: all 0.15s;
+}
+.model-pill:hover { border-color: var(--gold); color: var(--gold); }
+.model-pill.active { background: var(--gold); color: var(--white); border-color: var(--gold); }
 
-  /* ── CHART CONTAINER ── */
-  .chart-container { width: 100%; min-height: 420px; }
-  .chart-container-tall { width: 100%; min-height: 520px; }
+/* ══════════════════════════════════ TEST POINTS ══ */
+.tp-row {
+  display: grid; grid-template-columns: 28px 1fr 1fr 28px;
+  gap: 6px; align-items: center; margin-bottom: 7px;
+}
+.tp-num {
+  font-size: 10px; font-weight: 700; color: var(--text-muted);
+  text-align: center;
+  background: var(--gold-pale); border-radius: 50%;
+  width: 22px; height: 22px; line-height: 22px;
+}
+.tp-input {
+  padding: 6px 8px; border: 1.5px solid var(--border);
+  border-radius: 4px; font-size: 12px; width: 100%;
+  font-family: inherit;
+}
+.tp-input:focus { outline: none; border-color: var(--gold); }
+.tp-del {
+  background: #FDE8E8; color: var(--red); border: none;
+  border-radius: 4px; width: 24px; height: 24px;
+  cursor: pointer; font-size: 13px; line-height: 24px;
+  text-align: center; font-weight: 700;
+}
+.tp-header {
+  display: grid; grid-template-columns: 28px 1fr 1fr 28px;
+  gap: 6px; margin-bottom: 4px;
+}
+.tp-col-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-align: center; }
 
-  /* ── SENSITIVITY TABLE ── */
-  .sens-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-  .sens-table th { background: var(--apc-brown); color: #fff; padding: 6px 8px; font-size: 10px; }
-  .sens-table td { padding: 5px 8px; border-bottom: 1px solid #EEE; text-align: center; }
-  .sens-table tr:nth-child(even) td { background: #FAF5EE; }
+/* ══════════════════════════════════ QUALITY METER ══ */
+.quality-bar-wrap {
+  background: var(--border-lt); border-radius: 20px; height: 8px; overflow: hidden; margin: 6px 0;
+}
+.quality-bar { height: 100%; border-radius: 20px; transition: width 0.4s, background 0.4s; }
 
-  /* ── FOOTER ── */
-  .site-footer {
-    background: var(--apc-dark);
-    color: rgba(255,255,255,0.5);
-    text-align: center;
-    padding: 16px;
-    font-size: 11px;
-    letter-spacing: 0.5px;
-    margin-top: 40px;
-  }
+/* ══════════════════════════════════ SECTION LABEL ══ */
+.section-eyebrow {
+  font-size: 10px; font-weight: 700; color: var(--gold);
+  text-transform: uppercase; letter-spacing: 1.5px;
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-eyebrow::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
 
-  @media (max-width: 900px) {
-    .grid-panel, .grid-panel-wide, .grid-2, .grid-3 { grid-template-columns: 1fr; }
-    .header-badge { display: none; }
-    .main { padding: 16px; }
-  }
+/* ══════════════════════════════════ CHART ══ */
+.chart-wrap { width: 100%; min-height: 440px; }
+.chart-wrap-md { width: 100%; min-height: 300px; }
+.chart-wrap-sm { width: 100%; min-height: 240px; }
+
+/* ══════════════════════════════════ FOOTER ══ */
+.site-footer {
+  background: var(--white);
+  border-top: 2px solid var(--gold);
+  color: var(--text-muted);
+  text-align: center;
+  padding: 14px 28px;
+  font-size: 10px;
+  letter-spacing: 0.4px;
+  margin-top: 40px;
+}
+.site-footer strong { color: var(--gold); }
+
+/* ══════════════════════════════════ RESPONSIVE ══ */
+@media (max-width: 960px) {
+  .grid-panel, .grid-panel-lg, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .header-badges { display: none; }
+  .main { padding: 14px 14px 40px; }
+  .header-inner { padding: 10px 14px; }
+  .tab-bar { padding: 0 14px; }
+}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════ HEADER ═══ -->
+<!-- ════════════════════════════════════════════ HEADER ════ -->
 <header class="site-header">
-  <div style="background:var(--apc-dark); padding:0 28px;">
-    <div style="max-width:1400px;margin:0 auto;">
-      <div class="tab-bar" style="padding:0;">
-        <button class="tab-btn active" onclick="switchTab(0)"><span class="tab-num">1</span>Theory</button>
-        <button class="tab-btn" onclick="switchTab(1)"><span class="tab-num">2</span>Case 1 — Above Pb</button>
-        <button class="tab-btn" onclick="switchTab(2)"><span class="tab-num">3</span>Case 2 — Below Pb</button>
-        <button class="tab-btn" onclick="switchTab(3)"><span class="tab-num">4</span>Case 3 — Composite + ESP</button>
-        <button class="tab-btn" onclick="switchTab(4)"><span class="tab-num">5</span>From Test Data</button>
-      </div>
-    </div>
-  </div>
   <div class="header-inner">
     <div class="header-logo">
-      <div class="logo-circle">APC</div>
-      <div class="logo-sub">GOS</div>
+      <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAJ0AnADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9/KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoornviH8U/DPwm0FtU8U+IdE8Oaauc3Wp3sdpFx1G6QgE+1AHQ0V8Z/Gj/gu7+zz8Imngsde1bxtfW52tBoGntIhJ9JpjHEw55KO3fqRivlv4rf8HM2pzfaIfA3wvsLXAxBd67qb3GTjq0EKpjnsJTn1FNQkyXJH64UV+BfxG/4L1ftH+PHIsvEuh+FIm+9HpGiwYI9N1wJnH4MDXifjb/goN8cviLMzat8WviBKjjDwwa3PbQHr/wAs4mVO57Vp7Ji50f0uySLEhZiFVRkknAArF1D4l+HNJdVu/EGiWrOMqJb6JCw9stX8uPijx3rnjecS61rOq6vKpLB727kuGBIAzlyewH5VlUey8xc5/UrYfG/wXqniGHSLbxf4YuNVuGCxWUWqwPcSkjICxhtxOOeBXV1/OZ/wSO/5SP8Awm/7C7f+iJa/ozqJx5SoyuFFFFSUFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRWR408b6P8OvDF3rev6pYaLo+nxmW6vb2dYILdB1LOxAAr85/2yP8Ag4l8KeA/tWi/B7SP+Ew1RMx/23qSPb6ZC3IzHF8ss+D6+WvcFhTUW9hNpbn6Q6/r1j4W0e41HU72107T7NDJPdXUywwwIOrM7EBR7k18W/tO/wDBe74K/Ak3Fj4anvPiVrcOVEejkR6erejXbjaR/tRLIK/HL9pf9tT4nftea+17498XaprMIk8yDTxJ5On2Z5x5VumI1IBxuwXI6seteWVqqXchz7H25+0T/wAF8Pjn8aHmtfD15pfw60lyQsejw+ZeMuOj3Mu45zzmNY+34/HXjf4ga98TNfk1bxJrer+INUlAV7zUryS7uHAyQC8hLHqe/esiitVFLYhtsKKKKYgooooAKKKKAPo3/gkd/wApH/hN/wBhdv8A0RLX9Gdfzmf8Ejv+Uj/wm/7C7f8AoiWv6M6wq7msNgooorIsKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoori/jp8fvB/7NXw7vfFfjfXrPQNEsuGmnYl5XwSI4kGWkkODhEBJweODQB2gORXw/wDt6/8ABb/4efsoNe+HvCP2f4geOocxtb2s+NN02TOD9onXO5lOcxx5ORhmjzmvgv8A4KG/8FwvGv7Uz33hjwCb7wL4BlzE5STZqurIeD50iE+Wh/55xnkEhmcHA+E62jS6szlPses/tV/tv/Ev9s7xT/aXjzxJc6hbxSGS00uHMOnaf1H7qAHaDg43nLkdWNeTUUVslYzCiiigAooooAKKKKACiiigAooooA+jf+CR3/KR/wCE3/YXb/0RLX9Gdfzmf8Ejv+Uj/wAJv+wu3/oiWv6M6wq7msNgooorIsKKKKACiiigAooooAKKKKAGk4PSlzkc4pryrGpZmAUDJz0FeHfGX9rKHR2m03wyY7q5XKPfEBoYj/0zH8Z9z8v+9XFi8bRw0Oeq7fmzWjQnVlywR7YbyH7T5IkQygBtm4bgOmcelTdDxXwrB441i28S/wBsJqd4NT3bjcmUmQ+xJ6jtg8Y4xivoH4NftW2viZodO8RGOw1A4VLkfLBOf9r+43/jp9uBXl4HiChXn7Oa5X0vszsxGWVKceZa9z2uigHIor6E84KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKK+Mv+CpH/BWnQf2GvD8/hvw41lr3xQvYlaCxfL2+kRuMie52kc45WLIZsgnC8kSvohN2PQv+CgX/AAUj8EfsB+BhcaxINZ8WahEW0nw9bShZ7s9BJI2D5MIPVyCTghVYgivwg/a5/bP8e/tsfEl/EnjjVjctHuWx0633R2Glxk/cgiJO3OBliS7YG5jgVw/xO+KPiH40ePNS8T+KtXvdd1/V5fOu726fdJK2AB7BQAAFAAUAAAAAVg10wgluZSlcKKKKskKKKKACiiigAooooAKKKKACiiigAooooA+jf+CR3/KR/wCE3/YXb/0RLX9Gdfzmf8Ejv+Uj/wAJv+wu3/oiWv6M6wq7msNgooorIsKKKKACiiigAooziigBBy2azvEXiSx8K6RLfajcx2lrbrueRzx9B3JPYDk1T8cePdO+HXh6XUdUm8qCPhVHLyt2VR3J/wDrnAr5L+Lnxk1P4taz5t0xgsIWP2a0RjsiHPJ/vPjqfywK8bNM2p4SNlrN7L9WduDwUq7vtHudB8a/2kb/AOJDyafp7S2GiZKlM4lux6yEdB/sjj1zxjzGiivz3E4qriKjnVd2fTUaMKceWCsgooormNT1b4H/ALTF54AMWm6sZb3RuFRvvTWg/wBn+8o/u9u3ofpzRdbtfEWmQ31jPFdWs67kljbKsK+Da7X4O/G3UfhLqv7stdaZO2Z7RmwD/tKf4W/n0PbH02U59KlajXd49+q/zR5ONy5VPfpaP8z7K2ijIA9qyPBvjLT/AB3oUOo6ZcJcW0o6g/Mjd1YdmHpWu33TX3VOcZxUou6Z88007MWiiitBBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRXyX/wVV/4KV6Z+wR8JxaaWYNR+I3iSF00WxbDLZrgqb2Yf880b7qnmRuBwHZRK+iE3Y5n/grD/wAFYdM/Yl8MzeEfCM1pqnxR1SDMcZxJDoETDi4nHQyEHKRnrwzfLgP+FPi3xZqfjzxPf61rV/d6pq2qTvc3d3cyGSa4lY5Z2Y8kkmpfHHjjV/iV4v1LX9f1G61bWtXuHury8uXLy3ErHLMx/wAgdBxWVXTGNjKUrhRRRVkhRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB9G/8Ejv+Uj/AMJv+wu3/oiWv6M6/nM/4JHf8pH/AITf9hdv/REtf0Z1hV3NYbBRRRWRYUUUUAFFFFADTz34rC8fePdP+HPh+bU9RmEUUfCIOXmbsijuT+nU8CrfirxPY+DNBudS1CZYLW1Xc7E8n0AHck8Adya+Pvi78V774r+Jmu7jMdpDlLS2B4gTPf1Y8ZP9AK8XN81jg6do6zey/VnbgsG68rv4URfFT4qaj8VvEbXl63lwR5W2tlOUt09B6k9z3+gAHM0UV+dVq06s3UqO7Z9TThGEVGKskFFFFZFBRRRQAUUUUAdV8JvizqPwm8Qi6tSZrSYhbq1ZsJMv9GHY/wBCRX174L8Z2Hj7w9b6np0vm28478NGw6qw7Ef54r4Yrs/gv8Ybz4S+JRMu+bTbkhbu3zw6/wB9e28dvXp3r6HJM4eHl7Oq/df4f8A8zH4FVVzw+L8z7MIBHNAIA9qz/D2v2virR7e/spluLS7QSRyL3B/kR0IPIIrQxlcV+gRkpK62Pm2mnZi0UUVYgooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKzvFXijTvA/hnUNZ1e8t9O0rSreS7u7qdtsdvEilndj2AAJoA8w/bd/bE8O/sP8AwC1Txt4gK3M0Z+zaVpqyBJdVvGB8uFTzgcFmbB2orHBIAP8AOj8f/j14m/aZ+Les+NvF9+2oa5rc5llYZEUC9EhiUk7Y0XCquTgDqTkn1z/gpt+3xqf7ev7Qdzq6tPa+DdCMll4b098jyrfdzO69POlIDN6AImTsyfnGt4QsjGUrhRRRWpIUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAH0b/wAEjv8AlI/8Jv8AsLt/6Ilr+jOv5zP+CR3/ACkf+E3/AGF2/wDREtf0Z1hV3NYbBRRRWRYUUUUAJjd14qK4uUtIHllZY441LMzHAUDkkn0qUnA5r5//AGtPjNs3eFtNmOSA2oSIe3URZ/VvwHqK4cfjYYai6s/ku77G2HoSqzUInDftC/GuT4peITa2rsui2DkW6jjz26GVv6eg9ya85oor8xxOKqV6jq1Hds+uo0o04qEdkFFFFc5oFFFFABRRRQAUUUUAFFFFAHqH7N3xvb4c62NN1GVjol8+GLHi0kPHmD/ZP8X59ufq1WEiAqQVIyCOhr4Cr6M/ZO+NLaxZr4W1KXNzbJmxkY8yxjrH9VHI/wBn/d5+v4dzazWFqvTo/wBDxczwV17aHz/zPdKKB0or7U8EKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACvya/4ODv8AgoA5nj+BXhW+Kqvl3ni2aFvvEgPBZE+n3ZX/AO2Qzwwr77/b5/a6039ij9mPXvG935M+oxJ9k0azkbH26+kBESepUYLtjnYjV/N14w8Xal4/8Wanrus3k2oavrN1Le3t1KQXuJpHLu5xxksSePWtacLu5nN9DOooorczCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAPo3/AIJHf8pH/hN/2F2/9ES1/RnX85n/AASO/wCUj/wm/wCwu3/oiWv6M6wq7msNgooorIsKKM0ySZYY2d2CqoySTgAetAHGfHH4pxfCvwTNdrsbULnMNnGecyEfeI/uqOT+A718c3l3LqF1LPPI0s07mSR2OWdickk+pNdj8ePie/xR8dz3Mbk6dZ5gsl5xsB5fHqx5+mB2riq/Nc8zD6zXtF+7HRfqz6jL8L7GnzPd7hRRRXinoBRRRQAUUUUAFFFFABRRRQAUUUUAFWNL1S40TUre8tJWguLaQSxSKeUYHINV6KcZNS5ohKPNoz7T+EHxKh+Kfgu31GPatwv7q6iB/wBVKByPoeCPY11mct9K+QP2dPio3w18dRrPJt0vUyILkHpHz8sn/ASefYn2r6+D5GevFfpmT5h9aw6k/iWj/wAz5PHYb2NSy2ew6igciivXOMKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoor5/8A+CmP7W6fsY/sheJvFlvNHH4gukGlaCjEZe+mBCMAevlqHlI7iIihK+gH5Rf8F2/20D+0f+1O/g7Rr7z/AAl8Ny9hH5T5iu9QOPtMvBwdpAiHp5bkcOa+HKfcXEl7cSSyyPLLKxd3dizOxOSST1JNMrrirKxg3cKKKKYgooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD6N/4JHf8pH/hN/2F2/8AREtf0Z1/OZ/wSO/5SP8Awm/7C7f+iJa/ozrCruaw2CiiisixpwSeteSfta/Eo+EvBa6TbSbb7Wso+DzHAPvn/gWQv0Lelerzzpawu7sqIgLMxOAAOpNfFnxi8fv8SPiBfanuJtt3k2qn+GFSQv0zyx92NeBn+O+r4fki/elp8uv+R6GW4f2lW72X9I5iiiivzo+oCiiigAooooAKKKKACiiigAooooAKKKKACiiigAr6u/Za+JR8c+AVsrl92oaNtgkJPMkeP3bfkCp91z3r5RrsvgP8RD8NviPZXckmyyuT9mu8ngRsR8x/3ThvwPrXr5Ljfq+JV37r0f8AmcWPw/taTtutUfZ3SikVgwBHelr9NR8oFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAjZ7V+JX/Bw5+1Ufip+05pvw3025L6P8O7bdeKpO2TUbhVd89m8uLylHcM0or9jfjT8U9N+B3wl8TeMtWLf2d4X0y41O4C/edYo2fYv+02MAdyRX8wfxJ+IGp/Fn4h654o1mYXGreIr+fUryQZw0sshd8ZJIGWOBngYrWktbkTeljEooorcyCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD6N/4JHf8pH/hN/2F2/8AREtf0Z1/OZ/wSO/5SP8Awm/7C7f+iJa/ozrCruaw2CiiisizzD9qrx7/AMId8M5bWF9t5rTG1TBwRHjMjfTb8v8AwMV8nV6d+1h40Pin4pS2cb7rbRoxbKAeDIfmkP1yQv8AwCvMa/NM9xft8VJLaOi+W/4n1OXUPZ0V3eoUUUV4x3hRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAfX37Nfjz/hO/hfZmV915pv+hz5OS20Da34qV59Qa9BHyCvln9kDxr/YHxFk0yR9tvrMWwA9PNTLL+m8fiK+pj1x2r9NyXF+3wkZdVo/kfJY+j7Os0tnqLRRRXrnIFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAH5/wD/AAcQftBj4Zfsd6d4LtZxHqPxE1RYZEBIY2VqVnmIx/01+zKR3Dmvw/r7s/4OEPje3xK/bnHhiCYtY/D/AEiCxKD7ouZx9plYe5SSFT/1z9c18J1001aJjN6hRRRVkhRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB9G/8ABI7/AJSP/Cb/ALC7f+iJa/ozr+cz/gkd/wApH/hN/wBhdv8A0RLX9GdYVdzWGwn3VNZvi7XovCvhm/1KbmOwt3nI/vbVJx+PT8a0jXk/7YHif+xPhcLFDiTV7lIiAcHYvzsfzCj8a87G4j2NCVTsvx6HRh6ftKkYd2fL2oX8uqX89zO5knuZGlkY9WZjkn8zUNFFflMpczuz7KK6IKKKKkYUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAFzQNZl8Oa5ZX8H+usZknj+qsCP5V90aJqcOu6Na31u26C7iSeM+qsoI/Q18F19Zfsp+KD4j+EdrC7FptLke0bPXA+Zfw2sB/wABr6vhbE2qyoPqr/NHjZxSvFVF0PTqKKK+5PACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACop7hLeJpJGVEQFmZjgKB1JPpUteRft6fEt/g/wDsYfFDxHC6x3Wn+G70Wrk4CzyRNHEf+/jpx3oA/nY/ah+Lj/Hr9o7xz4zeV5U8S65d38BYEFYXlYxLg8gLHsUZ5wBXB0UV2I5wooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAPo3/gkd/ykf+E3/YXb/wBES1/RnX85n/BI7/lI/wDCb/sLt/6Ilr+jOsKu5rDYZjBOK+af21PEJvfHWm6arZTT7QykejyNyP8AvlF/OvpccnJr4x+Putf2/wDGHXpwcrHcm3HoBEBH/wCy18txNW5MKoL7TX4anq5TC9bm7I4+iiivz8+mCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACvc/2I/EXka9reksxIuIEukB6Ao21vz3r+VeGV3n7M+uHQ/jRo5JxHdM9s/vvQgf+Pba9LKK3ssXCXnb79DlxsOehJeX5an2JRRRX6kfIhRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABXxP/wcAeOk8Jf8E5da093Ct4o1rTtMQf3isv2vH5WpP4V9sV+Zv/BzB4uFp8Avhtoe8BtQ8QT3wTIywgtimcdePtI7d/pmofEiZbH440UUV1GIUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAH0b/wSO/5SP/Cb/sLt/wCiJa/ozr+cz/gkd/ykf+E3/YXb/wBES1/RnWFXc1hsRXE620EkjnaqAsT6AV8GatqL6vqtzdyZ8y6leZuc8sST/Ovtr4nah/ZXw6165Bw0Onzuv18tsfrivh2vhuK6nvU4er/I9/Jo6Sl6BRRRXx57gUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAVpeD9V/sLxbpd8TtFpdxT59Nrg/0rNoq6UnGakuhMleNmff6t0FLWb4R1H+2PC2m3ec/abWKXPruQH+taLdOK/XaclKKaPimrOwtFFFaCCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK/Iz/g5z1fz/F3wesN5P2az1a42bfu+Y9ouc+/ldPb3r9c6/Gz/AIOYNSkm/aE+G9oSPJg8OzTLxzue5YH9EWrp/ERPY/NKiiiukyCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA+jf+CR3/KR/4Tf9hdv/AERLX9Gdfzmf8Ejv+Uj/AMJv+wu3/oiWv6M6wq7msNji/wBoS6Np8GvELr1a22dccMyqf518Z19fftSN/wAWJ1z3Nv8A+lEVfINfnvFMv9pivL9T6TJ1+6b8/wBEFFFFfMHrhRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQgPtb4L3P2z4SeHHznbp8KdMfdQL/SupByR9K4n9nic3PwX0FmABFuV49A7Afyrtccj6V+tYN3oQfkvyPi6ytUkvNjqKKK6jMKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAr8Zv+Dl7/k5b4ef9iy//AKVS1+zNfjt/wczaWkXxq+F96FcSXGiXcDN/CQk6sAPf94fzFaU/iInsfmRRRRXQZBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAfRv/AASO/wCUj/wm/wCwu3/oiWv6M6/nM/4JHf8AKR/4Tf8AYXb/ANES1/RnWFXc1hsec/tVxF/ghq5HSN4GP085B/WvkWvsD9pyBrj4G66q4yFhbn0E8ZP6Cvj+vzvilf7VF+S/Nn0uT/wX6/ogooor5o9YKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKEB9j/s5f8kV8P/8AXJ//AEY1dx3rjf2f4Bb/AAb8PqAQPsobnryxP9a7InNfrOBVsPTXkvyPjMR/Fl6v8xaKKK6zIKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAr8nv+DnTw9K0fwb1ZVYwqdXtJW3DCsfsToMdckCTnp8o6d/1hr86f+Dkvwe+qfsgeD9ZjjLnR/FccMhH/LOOa1uMn6bo0H4j8Kp/GiZbH4q0UUV1GIUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAH0b/AMEjv+Uj/wAJv+wu3/oiWv6M6/nM/wCCR3/KR/4Tf9hdv/REtf0Z1hV3NYbHI/HS0+3/AAg8QpgHbZPJyM/dG7+lfFtfdXjLTP7Z8I6pZ43fa7SWHHruQj+tfCtfBcVwtUhPun+H/Dn0OTy9yS8wooor5M9oKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKdFE00iooLM5CgDuTTjugex9t/CeyNj8MPD0LZymnW+7nOD5ak/rXRAfOfaq2l2Y0/TLeAdIIljH4AD+lWG/ir9dox5KcY9kfEzd5NjqKKK2JCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooACM18n/APBbH4en4h/8E3PiCsSI9zoq2mrQ7iQFEN1EZDx38ky4/p1r6wrjf2gfhrH8ZfgT4z8IyAFfE+h3ul88YM0Dxg+xBYHPtTTs7iaufy40U+4t5LK4kiljeKWJijo6lWRgcEEHoQaZXWYBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAfRv/BI7/lI/wDCb/sLt/6Ilr+jOv5zP+CR3/KR/wCE3/YXb/0RLX9GdYVdzWGwjDOa+E/G2kDw/wCMdVsQAFs7yWADGOFcgfoK+7BwTXyF+1FoX9h/GbU2xtjvljuk99ygN/48rV8hxRSvQjU7O33ns5PUtUce6PPaKKK+FPogooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigArf8AhVpB174k6FaY3LJfQ7x/shwW/QGsCvTv2R9BOsfGCCcjKaZby3J9CSPLH6vn8K68BT9piacO7X5mGJnyUpS8j6yHAooor9YR8cFFFFMAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD+bT/AIKZ/B4/Av8Abz+KHh9UZLf+25dRtQRgCC7AuowPUKswX/gNeFV+mX/Byj8DG0D40eBPiJbxv9n8R6ZJo14VX5EntX3oxP8AeeOcge0HtX5m10wd0YSVmFFFFWIKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAPo3/AIJHf8pH/hN/2F2/9ES1/RnX85n/AASO/wCUj/wm/wCwu3/oiWv6M6wq7msNhuNpHevnz9tzw2Vn0TV0Xhlezlb0wd6D9ZPyr6CBwea4L9pfwqfFXwi1NUXdNYAXsft5fLf+OF68fN8P7bCTh1tf7tTswVTkrxkfH9FFFflx9eFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFfRH7Enh0w6TrWrOv/AB8Spaxk+iAs3/oa/lXzvX2Z8AvCv/CH/CjR7Z1xNJD9olz13SHfg+4BA/CvouGsPz4r2j2ir/N6Hl5rV5aXL3O0ooor9CPmwooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA+UP+C0X7PX/DQf7AHi9beDztV8HBfE1jxkg2wbz8d+bZpwB3OK/nur+rm+s4dTs5re4jWaC4Ro5I3GVdSMEEehBr+Z79uP9nC4/ZN/at8a+BJI3S00fUHbTnbJ86ylxLbtk9T5ToDycMGGcitqT6Gc11PJ6KKK2MwooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA+jf+CR3/ACkf+E3/AGF2/wDREtf0Z1/OZ/wSO/5SP/Cb/sLt/wCiJa/ozrCruaw2Corq2S8tpIpVDxyqVdT0YEYIqWjrWLV9Cz4W8eeFpPBPjLUtKkyTZXDRqT1dc5VvxUg/jWRXt/7Z/ggWOv6fr8KYjvk+zXBA4EiDKk+5XI/7Z14hX5VmOG9hiZ0+ienp0PscJW9rSjIKKKK4TcKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigDoPhZ4Rbx18QdK0wqWjuZwZsdol+Z/8Ax0Gvt2JRGqgAADpjtXz5+xb4H3zan4hmThR9jtifU4aQ/wDoAz7mvoQkA5xX6Dw5hfZYb2j3k/wWx8zmlbnq8q6DqKKK+jPNCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigANflj/wcf8A7Jr6v4a8MfGPS7bdLpJGga6UXnyHZntZm5wAsjSRk4yTNGOgr9Tq4749fBjRv2ifg14l8D6/EZNJ8TWEllMQAWhLD5JVzxvRwrqezIDTi7O4mrqx/LhRXVfHD4P6z+z/APF7xH4K8QQ+RrHhq/lsbgAELIUPEi56o64dT3Vge9crXWYBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB9G/8Ejv+Uj/AMJv+wu3/oiWv6M6/nM/4JHf8pH/AITf9hdv/REtf0Z1hV3NYbBRRRWRZynxi8Dr8Rvh3qGmAA3Dp5lsT/DKvK/n0Psxr4slhaGVkdWR0JVlYYKkdjX34GGelfKP7Vfw4/4Q34hNqMCYsdb3XC4HCTZ/eL+JIb/gR9K+S4nwPNCOIj00fp0/E9nKK9pOk+uqPL6KKK+IPfCiiigAooooAKKKKACiiigAooooAKKKKACiiigAqSztJdQu4oIEaWadxHGijJdicAD3JqOvW/2RvhyfE/jd9ZuEJstGwUyOHnYfKP8AgIy3sdvrXXgcNLEVo0o9fy6mOIrKlTc30PoT4Y+C4/h/4G0/SU2k2sQErL0eQ8u34sTj2xW+PvH2pTzxR91ea/VKUFCChHZaHx0pOTcnuxaKKK1EFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB+Uv8AwcU/sSm7tdK+OGgWeXgEekeKBGvVPu2t030P7lj7wjoDX5M1/VF8Svh5o/xb+H+s+GNfs01DRdfs5bC9t3HEsUilWAPY4OQRyCARyK/m0/bY/ZS1n9i79o7xB4D1fzJ00+QT6besm1dRspMmGcduRlWA4V0df4a3pS0sZTXU8oooorUgKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA+jf+CR3/ACkf+E3/AGF2/wDREtf0Z1/OZ/wSO/5SP/Cb/sLt/wCiJa/ozrCruaw2CiiisixpG0j0rkPjX8Nk+JvgK7sFVftkY8+0c8bZVBwM+jDKn2b2rsA2QKCaxr0o1YOnNaPQdObhJSjuj4DuLeS0uJIpUaKWJijowwykHBBHrTK9n/a4+E50HXh4js4sWmotsugo4im/vfRwP++gfUV4xX5bj8JPDVpUpdPxXRn2GGrKrTU0FFFFcZuFFFFABRRRQAUUUUAFFFFABRRRQAUUUUATafp82rX8FrbRtNcXMixRRr1dicAD6mvtP4TfD6H4aeCLPS02NKi+ZcOvHmzN95vp2HsBXjX7IHwoN9fN4pvYsQ25aKwVh99+jSfQDKj3J7ivopcEfSvu+G8u9nTeImtZben/AAT53NcTzS9lHZb+o6iiivqTyQooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAr48/4LF/8ABPxf21v2e31PQrQP8QvBaSXmjlMB9QhxmazJ77wAyZ6SKoyAzV9h0U07O4mrn8oVxbyWVxJFLG8UsTFHR1KsjA4IIPQg0yv0w/4Lw/8ABNRvhv4quvjX4K08L4e1ucHxPZ28eBp147cXYA6RzMfn9JTnJ8z5fzPrpjK6uYtWCiiiqEFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB9G/8Ejv+Uj/AMJv+wu3/oiWv6M6/nM/4JHf8pH/AITf9hdv/REtf0Z1hV3NYbBRRRWRYUUUEZFAGZ4p8OWni7QLnTL2IS2t5GY3XuPQj0IOCD2IFfF/xH8BXfw28X3Wk3gJMJ3RSYwJ4z91x9f0II7V9wgDI5rz79oL4OR/FLwqTbKi6vYAvaueN/rGT6Ht6HHbNeBnmV/WaXPBe/HbzXY9DL8X7GfLL4X/AFc+QqKfd20llcyQzRvFNCxR0cYZGBwQR2INMr86lG2jPqAooooAKKKKACiiigAooooAKKKKACuj+FXw5uvif4xt9NtwyRH95czAcQRA/M317D3IrC07T59Wv4bW2iee4uHEccaDLOxOABX2B8CvhLD8JvCKQuFfU7vEt3KOctjhAf7q9Pc5PevYybLHiq15fAt/8jgx2LVGGm72Os0LRbbw7o9tY2kaw21rGIokH8KgY/yavZ5ooIzX6VGKSsj5Zu7uwoooqgCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigDN8T+GNO8beG7/R9WsrfUdL1S3e1u7WdA8VxE6lXRgeoIJBr+f3/gqr/wTe1L9gr4w+dpsV1e/DrxJK8mh37gv9lbljZzN/z0QfdJ/wBYo3DkOF/oUrif2gvgH4Z/ac+EmseC/F2npqOiazCY5F4EkDDlJo2/hkRsMrdiO4yDUJWZMo3P5daK90/b8/YQ8UfsE/Gibw5rQkv9Evt0+h60kRSHU4AfyWVMgOmcqSDyrKT4XXSnfUxCiiimAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAfRv/BI7/lI/wDCb/sLt/6Ilr+jOv5zP+CR3/KR/wCE3/YXb/0RLX9GdYVdzWGwUUUVkWFFFFABiiiigDwr9qX4DHWIJfEujQ7ruJd1/Ag5mUD/AFij+8B19Rz1HPzpX38V3D1FfNf7Sv7Ph8OTTeIdDgJ0+Qlry2jXi1P99QP4D3H8P06fG5/k2+JoL1X6nt5bjtqVR+n+R4rRRRXxp7oUUUUAFFFFABRRRQAUUV7t+zL+z4bySDxLrkREC4lsLZv+Wh6iVh6f3R369MZ7cDgamKqqnD5vsu5z4jExow55HQfsv/Ak+FbOPxBq0ONSuU/0WFxzaxn+I+jsPyB9SQPaV5FIoxigEgH2r9LweEhhqSp09l+PmfKVq0qs3KQ6iiiuwyCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAPN/wBqP9l7wh+2D8IdQ8F+NNOF5p14PMgnTC3OnTgEJcQuQdki5PqCCVYFWIP8+/7df7BXjT9g34rzaD4jt5LzRbt2fRtdhhZbTVYR6HkJKoxvjJyp55Uqzf0oVw37Qn7O3hD9qT4XX/g/xtpEOr6LfjO1vlltpADtmiccpIuThh6kHIJBuE7Eyjc/l4or6f8A+CjP/BLzxn+wN4ve5kWfxD4Av5tuma/FEQEJ6QXKjiKYdv4XAypzuVfmCuhNPVGLVgooopgFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAfRv8AwSO/5SP/AAm/7C7f+iJa/ozr+cz/AIJHf8pH/hN/2F2/9ES1/RnWFXc1hsFFFFZFhRRRQAUUUUAFMkiWVCjqGVhggjII9KfR1oaA+Zf2i/2cX8Jyza5oMDPpTktcWyDJsz3ZR/zz/wDQfp08Zr78dA64IyDwc18+fHz9l1oDNrXhiAtGcvcaegyV9WiHcf7Hbt6D4rOshabrYZadV/ke7gMxvanVfo/8zwaigrg4PBFFfIWPbCiiigAop0ULTSqiKzu5CqqjJYnsK+gfgD+y/wDZfI1vxNCDKMSW1g4yE9GlHc9CF7d/Qd2Ay+riqnLTXq+iOfE4qFGPNIy/2eP2bW1x7fXdfg22PElrZuObj0dx/c7gfxd+Ov0dGqxLgAYHAx2pwTC4oA46V+jYDAU8LT9nT+b6s+WxGJnWlzSFooor0DAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigDH8aeCdI+JHhS/0PXtMsdZ0bVIjBeWV5Cs0FxGeqsrcEf1ANfjj/wAFLf8AghTrfwObUPGnwet7/wAS+DlLT3ehZM+paMnUmL+K4hX8ZVGM7wGcftMBiiqjJrYTSZ/J/RX7u/8ABRH/AIIoeCf2vGvvFHg82ngf4hShpZJ44sabrEhyf9JjUZVyesyDdySyycY/GT9pL9lbx5+yT4+k8OePfD15ol9ljbysN9tfoCP3kEo+SReR0ORkBgDxXRGaZk4tHntFFFUSFFFFABRRRQAUUUUAFFFFABRRRQB9G/8ABI7/AJSP/Cb/ALC7f+iJa/ozr+cz/gkd/wApH/hN/wBhdv8A0RLX9GdYVdzWGwUUUVkWFFFFABRRRQAUUUUAFFFHSgDyT44/sy2fj/ztT0gRWOsnLOuNsV4f9r+63+0Ovf1HzP4h8O33hTVprDUbWWzu4Dh45Bgj3HYg9iODX3iTnHIrmviN8LNH+KWl/ZtTt8ugPk3EfyzQH1VvT2OQfSvms1yCGIvUo+7L8Geng8ylT9ypqvxR8TVo+GPCuo+MtXjsNMtZbu5l6Ko+6PUnoB7nivWIP2L9XPi028l/ajR1O77Uo/esv93y+zfjj3PSvdfAHwz0n4a6QLTS7YRZx5krfNLOfVm7/ToOwFeFgeHK9Wf79csV979P8z0cRmlOMf3erOP+Cf7Nlh8N44r+/Md/rQAIfGYrY+iA9T/tHn0xXqWKQqSeuKWvucNhaeHgqdNWR89VrTqS5pu7CiiiukgKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACuS+MvwO8JftB+B7nw1400DTfEeiXfL215EHCNggOjfejcZOHQhh2IrraKAPx5/bd/4N4Nd8JTXmv/BTUX8Q6cWMh8OalMkd9bjkkQTnakqjoFfa+B95zX5s+NPBGs/DjxPeaL4g0rUNE1ewfy7myvrdoJ4G9GRgCK/qsry79pP9jz4aftb+HF0/4geEtM14RKVt7plMN7aZ5/dToVkQZwSA2045BFaxqtbmbh2P5kKK/Tz9rD/g3E8Q+HGutT+D/iSPxDZrl10TXHW2vVHPyx3AAikPQfOIh/tGvzy+M3wB8a/s7+KW0Xxx4X1nwxqQLbIr+2aNZwMZaN/uyLyPmQkc9a1Uk9iGmjkKKKKoQUUUUAFFFFABRRRQB9G/8Ejv+Uj/AMJv+wu3/oiWv6M6/nM/4JHf8pH/AITf9hdv/REtf0Z1hV3NYbBRRRWRYUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABWL44+Hug/E/w5Po/iTRdJ8QaTdDE1lqNpHdW8n1RwVP5VtUUAfCH7Rf/AAb8fBX4vvcXnhRtY+HGqS5IGnyfa7Ase7W8pJAz/DHIg9q+Hfjz/wAG9vxw+GAmufC0nh/4hWCH5VsboWd7t9Win2p+CyMa/dGirU2iXFM/ly+LH7Ovj34EXrW/jPwb4m8MOshjDalp0tvHI3+w7KFcehUkHtXGV/VxfWUGq2clvcwxXEEy7ZIpUDo49CDwRXhfxY/4JifAL41CY678LPCyzznc9xptudLnZv7xktjGxPHcnPfIq1V7kumfzd0V+4XxE/4Nz/gb4ruHl0TVfHXhZyflht7+K6t1/CaJpP8AyJ6/h4n4v/4Nj7xZ3fQPi7bSxn7kWoeH2jZfq6Ttn/vkf1q1UiTyM/Kmiv0J8Rf8G3Pxr065P9m+KPhtqUBwAzX13BJ05yptiMZ9GP0rkNU/4N+/2i9PVDFpfhS+LE5EGtxgp9d4X9M0c8e4rM8y/wCCR3/KR/4Tf9hdv/REtf0Z1+N//BPz/gjl8df2ff2yvAPjPxNoOj22g6BqJuLyWHWIJnRDE65CK2Tyw6V+yFZVGm9DSC0CiiisywooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAqahq1rpbwrc3MEDXEgiiEkgUyuSAFXPUkkDA9at1+Tf8AwXJdl/4KQfs+4YjatiRz0P8AanWv1jLYNNxskxXQtFFFIYUUUUAFFFfJXw5/4LB/Dj4kftl6x8GoNM8SWep6Vc39kmqTwJ9kuZ7JZHnUBWLqu2GUqzDnZ0GRTSuK6PrWkZc18rfsLf8ABWbwD+3v8VfEPhHw1pPiPSdR0SyfU4X1GKMR31qsyRNICjNsYNLF8rc4fgnBx9VUnpuMKZJIsSFmIVVGSScACn182/8ABXd2i/4JvfFgqxUnSkGQccG5hBH5UAfRWn38Gp2qz200VxC+dskbB1bBwcEcdQasV8Wf8ECHZ/8AgnB4fBJIXV9RCgnoPtBP8ya9s/4KLTPB+wZ8YnjdkdfB+p4ZTgj/AEZ6bWthX0ueu6ZqNvqlsJraeG5hLFRJE4dSQSCMjjIIIPuKtV+fH/BtzcyTfsMeJ0eSR1h8c3iRhmJCL9g09sD0GST9SfWv0HokrOwJ3VwooopDCiiigAoor46/YR/4LAeH/wBun9onxL4A0zwdq+g/2PZzahYahcXSyi/giljibzItitA5MqkLl+AckHAIkxXR9i0V8v8A/BQXxr4u+EfxP+CnjbRtH8deIfCuga/eReJtO8L2813cTQz2jRwvJbxkebGknzfNwCBj5iM/P/8AwTf8WfGbxD8Rvgh4S8Y+Gfi5pEvw50nxJP4v1TxGlzHZaw19MslgDJIf37xIQoDZZPmAACtiuXS4XR+kFFFFSMKKKKAC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" alt="Alkhorayef Petroleum">
     </div>
+    <div class="header-divider"></div>
     <div class="header-text">
-      <h1>Nodal Analysis &amp; IPR–VLP Operating Point Tool</h1>
-      <div class="subtitle">NAVIGATE Program · Application Engineering · Global Operations Support · Alkhorayef Petroleum Company</div>
+      <h1>IPR · VLP · Nodal Analysis Tool</h1>
+      <div class="tagline">NAVIGATE Programme · Global Operations Support · Application Engineering</div>
     </div>
-    <div class="header-badge">
-      Reference: Beggs (1991)<br>Vogel (1968) · Standing (1971)<br>Takács (2009) — ESP Nodal
+    <div class="header-badges">
+      <div class="header-badge gold">APC 538 · ESP</div>
+      <div class="header-badge">Vogel 1968</div>
+      <div class="header-badge">Standing 1971</div>
+      <div class="header-badge">Beggs 1991</div>
+      <div class="header-badge">Takács 2009</div>
     </div>
   </div>
 </header>
 
-<!-- ═══════════════════════════════════════════════════════ MAIN ═══ -->
+<!-- ════════════════════════════════════════════ TAB BAR ════ -->
+<div class="tab-bar-wrap">
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab(0)">
+      <span class="tab-icon">1</span>Theory &amp; Framework
+    </button>
+    <button class="tab-btn" onclick="switchTab(1)">
+      <span class="tab-icon">2</span>Case 1 — Above Pb
+    </button>
+    <button class="tab-btn" onclick="switchTab(2)">
+      <span class="tab-icon">3</span>Case 2 — Below Pb (Vogel)
+    </button>
+    <button class="tab-btn" onclick="switchTab(3)">
+      <span class="tab-icon">4</span>Case 3 — Composite + ESP
+    </button>
+    <button class="tab-btn" onclick="switchTab(4)">
+      <span class="tab-icon">5</span>From Test Data
+    </button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ MAIN ════ -->
 <div class="main">
 
-<!-- ══════════════════════════════════ TAB 1 — THEORY ══════════════ -->
+<!-- ══════════════════════════ TAB 1 — THEORY ══════════════════ -->
 <div class="tab-content active" id="tab0">
+  <div class="section-eyebrow">Nodal Analysis — Engineering Foundation</div>
 
-  <div class="grid-2" style="margin-bottom:20px;">
+  <div class="grid-2" style="margin-bottom:18px;">
     <div class="card">
-      <div class="card-title">📐 What Is the Operating Point?</div>
-      <div class="theory-section">
-        <p>The <strong>Operating Point</strong> is the unique (q, P<sub>wf</sub>) pair where the reservoir inflow rate equals the wellbore outflow rate. It is the intersection of the <strong>IPR</strong> (reservoir drive → wellbore) and the <strong>VLP</strong> (wellbore → surface).</p>
-        <p>At the operating point: <strong>Inflow = Outflow</strong> and the well is in hydraulic equilibrium.</p>
+      <div class="card-header">
+        <div class="card-header-icon">📐</div>
+        <div class="card-title">Operating Point — Core Concept</div>
       </div>
-      <div class="theory-section">
-        <h3>System Decomposition (Nodal Analysis)</h3>
-        <p>Analysis node is typically set at <strong>mid-perforations</strong> (or pump intake for ESP wells):</p>
-        <table class="data-table">
-          <tr><th>Component</th><th>Drives</th><th>Modeled By</th></tr>
-          <tr><td>Reservoir → Perforations</td><td>Inflow</td><td>IPR curve</td></tr>
-          <tr><td>Perforations → Pump / Wellhead</td><td>Outflow</td><td>VLP curve</td></tr>
-          <tr><td>ESP Pump</td><td>Adds ΔP</td><td>Pump curve overlay</td></tr>
+      <div class="card-body">
+        <p class="theory-p">The <strong>Operating Point</strong> is the unique (q, P<sub>wf</sub>) coordinate where reservoir inflow rate equals wellbore outflow rate. It is the intersection of the <strong>IPR</strong> curve and the <strong>VLP</strong> curve at the analysis node.</p>
+        <p class="theory-p">At equilibrium: <strong>Inflow = Outflow</strong>. Any perturbation to the system (pressure change, pump change, stimulation) shifts one or both curves and relocates the operating point.</p>
+        <div class="theory-h3">System Node (Pump Intake / Mid-Perforations)</div>
+        <table class="data-table" style="margin-top:6px;">
+          <tr><th>Side</th><th>Component</th><th>Curve</th></tr>
+          <tr><td>Inflow</td><td>Reservoir → Perforations</td><td>IPR</td></tr>
+          <tr><td>Outflow</td><td>Node → Wellhead → Surface</td><td>VLP (natural)</td></tr>
+          <tr><td>Outflow+</td><td>Node → ESP → Wellhead</td><td>VLP − ΔP<sub>pump</sub></td></tr>
         </table>
+        <div class="flag flag-gold" style="margin-top:10px;"><span class="flag-icon">★</span><div><strong>Production optimisation = moving the operating point to the right</strong> by either improving IPR (stimulation, skin removal) or lowering VLP (artificial lift, larger tubing, VFD tuning).</div></div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title">📏 Key Equations</div>
-      <div class="theory-section">
-        <h3>1. Linear IPR — Undersaturated (P̄r &gt; Pb)</h3>
-        <div class="eq-box">q = J × (P̄r − P<sub>wf</sub>)</div>
-        <p>J = Productivity Index (STB/d/psi). Valid while P<sub>wf</sub> ≥ P<sub>b</sub>.</p>
+      <div class="card-header">
+        <div class="card-header-icon">📏</div>
+        <div class="card-title">IPR Correlation Equations</div>
       </div>
-      <div class="theory-section">
-        <h3>2. Vogel IPR — Solution-Gas Drive (P̄r &lt; Pb)</h3>
-        <div class="eq-box">q/q<sub>max</sub> = 1 − 0.2(P<sub>wf</sub>/P̄r) − 0.8(P<sub>wf</sub>/P̄r)²</div>
-        <p>q<sub>max</sub> = AOF (Absolute Open Flow potential). From <em>Vogel, JPT 1968.</em></p>
-      </div>
-      <div class="theory-section">
-        <h3>3. Composite IPR — Above &amp; Below Pb</h3>
-        <div class="eq-box">For P<sub>wf</sub> ≥ P<sub>b</sub>: q = J(P̄r − P<sub>wf</sub>)<br>For P<sub>wf</sub> &lt; P<sub>b</sub>: q = q<sub>b</sub> + (J·P<sub>b</sub>/1.8)[1 − 0.2(P<sub>wf</sub>/P<sub>b</sub>) − 0.8(P<sub>wf</sub>/P<sub>b</sub>)²]</div>
-        <p>q<sub>b</sub> = J(P̄r − P<sub>b</sub>) is the flow rate at bubble point. From <em>Standing, 1971.</em></p>
-      </div>
-      <div class="theory-section">
-        <h3>4. ESP VLP Shift</h3>
-        <div class="eq-box">P<sub>wf,ESP</sub> = P<sub>wf,natural</sub> − ΔP<sub>pump</sub><br>ΔP<sub>pump</sub> = ρ·g·H<sub>pump</sub> / 144  (psi)</div>
-        <p>ESP lowers the effective Pwf required to lift fluid → VLP curve shifts downward → operating point moves right (higher q).</p>
+      <div class="card-body">
+        <div class="theory-h3">1 · Linear IPR — Undersaturated (P<sub>wf</sub> ≥ P<sub>b</sub>)</div>
+        <div class="eq-box">q = J × (P̄r − P<sub>wf</sub>)<br><br>J = Productivity Index (STB/d/psi)</div>
+
+        <div class="theory-h3">2 · Vogel IPR — Solution-Gas Drive (P̄r ≤ P<sub>b</sub>)</div>
+        <div class="eq-box">q / q<sub>max</sub> = 1 − 0.2(P<sub>wf</sub>/P̄r) − 0.8(P<sub>wf</sub>/P̄r)²<br><br>q<sub>max</sub> = AOF at P<sub>wf</sub> = 0</div>
+
+        <div class="theory-h3">3 · Composite IPR — Standing (1971)</div>
+        <div class="eq-box">P<sub>wf</sub> ≥ P<sub>b</sub> : q = J(P̄r − P<sub>wf</sub>)<br>P<sub>wf</sub> &lt; P<sub>b</sub> : q = q<sub>b</sub> + (J·P<sub>b</sub>/1.8)[1 − 0.2(P<sub>wf</sub>/P<sub>b</sub>) − 0.8(P<sub>wf</sub>/P<sub>b</sub>)²]<br><br>q<sub>b</sub> = J(P̄r − P<sub>b</sub>)</div>
+
+        <div class="theory-h3">4 · ESP Nodal — VLP with Pump (Takács 2009)</div>
+        <div class="eq-box">P<sub>wf,ESP</sub> = P<sub>wh</sub> + γ·D − ΔP<sub>pump</sub> + ΔP<sub>friction</sub><br><br>ΔP<sub>pump</sub> = H<sub>total</sub>(ft) × γ<sub>fluid</sub> (psi)<br>H<sub>total</sub> = H<sub>stage</sub> × N<sub>stages</sub> × (f/60)²</div>
       </div>
     </div>
   </div>
 
   <div class="grid-3">
     <div class="card">
-      <div class="card-title">🔄 Effect of Reservoir Pressure Drop</div>
-      <div class="theory-section">
-        <p>As P̄r declines over field life:</p>
-        <p>▼ IPR curve shifts <strong>inward/downward</strong><br>▼ q<sub>max</sub> (AOF) decreases<br>▼ Operating point moves <strong>left</strong><br>▼ Production rate decreases<br>▼ P<sub>wf</sub> at operating point may rise or fall depending on VLP slope</p>
-        <div class="flag flag-amber"><span class="flag-icon">⚠</span>ESP sizing must account for <strong>future IPR</strong> to avoid premature pump underload or overload as reservoir depletes.</div>
+      <div class="card-header"><div class="card-header-icon">📉</div><div class="card-title">Reservoir Pressure Decline</div></div>
+      <div class="card-body">
+        <p class="theory-p">As P̄r declines over field life, the IPR curve collapses inward: q<sub>max</sub> decreases, the curve shifts left, and the operating point moves toward lower rate and higher drawdown fraction.</p>
+        <p class="theory-p">ESP sizing must target <strong>future IPR</strong> (typically P̄r at 3–5 yr forecast) to avoid early underload when the pump is oversized relative to depleted IPR.</p>
+        <div class="flag flag-amber"><span class="flag-icon">⚠</span>Match ESP stages to the <strong>mid-life IPR</strong>, not initial — avoids both early overload and late underload.</div>
       </div>
     </div>
     <div class="card">
-      <div class="card-title">💉 Effect of Stimulation (Acid / Frac)</div>
-      <div class="theory-section">
-        <p>Stimulation improves near-wellbore skin (S → negative):</p>
-        <p>▲ J increases (higher PI)<br>▲ IPR curve shifts <strong>outward/upward</strong><br>▲ q<sub>max</sub> increases<br>▲ Operating point moves <strong>right</strong><br>▲ Higher production at same P<sub>wf</sub></p>
-        <div class="flag flag-green"><span class="flag-icon">✓</span>Post-stimulation IPR can be modeled using <strong>Standing's FE (Flow Efficiency)</strong> correction: q<sub>stim</sub>/q<sub>damaged</sub> = FE.</div>
+      <div class="card-header"><div class="card-header-icon">💉</div><div class="card-title">Stimulation Effect</div></div>
+      <div class="card-body">
+        <p class="theory-p">Acidizing or hydraulic fracturing reduces near-wellbore skin (S). Skin removal improves the <strong>Flow Efficiency (FE)</strong> and shifts the IPR curve outward — higher q at any given P<sub>wf</sub>.</p>
+        <div class="eq-box">J<sub>stim</sub> = J<sub>damaged</sub> × FE<br>FE = (P̄r − P<sub>wf</sub>) / (P̄r − P<sub>wf</sub> − ΔP<sub>skin</sub>)</div>
+        <div class="flag flag-green"><span class="flag-icon">✓</span>Post-frac J can increase 2–10× in tight carbonates. Re-evaluate pump sizing after stimulation.</div>
       </div>
     </div>
     <div class="card">
-      <div class="card-title">⚡ Effect of ESP Artificial Lift</div>
-      <div class="theory-section">
-        <p>ESP adds pump head to the system:</p>
-        <p>▼ VLP curve shifts <strong>downward</strong><br>▲ New operating point at higher q<br>▲ Lower P<sub>wf</sub> required to produce same rate<br>▲ P<sub>wf</sub> can be drawn below P<sub>b</sub><br>▲ VFD allows <strong>frequency tuning</strong> to track IPR decline</p>
-        <div class="flag flag-blue"><span class="flag-icon">ℹ</span>ESP operating point must fall within pump <strong>Recommended Operating Window (ROW)</strong>: typically 70–130% of BEP flow.</div>
+      <div class="card-header"><div class="card-header-icon">⚡</div><div class="card-title">ESP Artificial Lift Effect</div></div>
+      <div class="card-body">
+        <p class="theory-p">ESP adds pump head (ΔP<sub>pump</sub>) at the node, effectively subtracting from the required P<sub>wf</sub> for a given rate. The VLP curve shifts downward — operating point moves right (higher q).</p>
+        <p class="theory-p">VFD allows real-time frequency adjustment to track IPR decline: as reservoir depletes, reduce Hz to stay within ROW (70–130% of BEP).</p>
+        <div class="flag flag-blue"><span class="flag-icon">ℹ</span>Operating outside ROW causes axial thrust reversal (&lt;70% BEP) or radial overload (&gt;130% BEP).</div>
       </div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title">📊 APC Pump Series Reference (2017 Catalog)</div>
-    <table class="data-table">
-      <thead>
-        <tr><th>Series</th><th>Casing OD</th><th>Flow Range (BPD @ 60Hz)</th><th>Head/Stage (ft)</th><th>BEP (BPD)</th><th>Max Stages</th><th>Application</th></tr>
-      </thead>
-      <tbody>
-        <tr><td><strong>APC 400</strong></td><td>4.5"</td><td>100 – 650</td><td>18 – 35</td><td>350</td><td>200+</td><td>Low-rate vertical, 4.5" casing</td></tr>
-        <tr><td><strong>APC 513</strong></td><td>5.5"</td><td>500 – 2,200</td><td>22 – 42</td><td>1,200</td><td>150+</td><td>Medium-rate, 5.5" casing</td></tr>
-        <tr><td><strong>APC 538</strong></td><td>5.5"</td><td>1,500 – 8,000</td><td>22 – 32</td><td>4,500</td><td>120+</td><td>High-rate, 5.5" – 7" casing</td></tr>
-        <tr><td><strong>APC 625</strong></td><td>7"</td><td>3,000 – 18,000</td><td>18 – 28</td><td>9,000</td><td>100+</td><td>High-volume, 7" casing</td></tr>
-      </tbody>
-    </table>
-    <div class="flag flag-blue" style="margin-top:12px;"><span class="flag-icon">ℹ</span>All Cases 2–4 use the <strong>APC 538 pump series</strong> as the reference pump. Head and BHP curves are polynomial fits to representative 60 Hz performance data. Frequency scaling uses affinity laws: Q ∝ N, H ∝ N², BHP ∝ N³.</div>
+  <div class="card" style="margin-top:18px;">
+    <div class="card-header"><div class="card-header-icon">🔧</div><div class="card-title">APC Pump Series Reference — 2017 Catalog</div></div>
+    <div class="card-body">
+      <table class="data-table">
+        <thead>
+          <tr><th>Series</th><th>Casing OD</th><th>Flow Range (BPD @ 60Hz)</th><th>Head/Stage (ft)</th><th>BEP (BPD)</th><th>ROW (BPD)</th><th>Typical Application</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>APC 400</strong></td><td>4.5"</td><td>100 – 650</td><td>18 – 35</td><td>350</td><td>245 – 455</td><td>Low-rate vertical, 4.5" casing</td></tr>
+          <tr><td><strong>APC 513</strong></td><td>5.5"</td><td>500 – 2,200</td><td>22 – 42</td><td>1,200</td><td>840 – 1,560</td><td>Medium-rate, 5.5" casing</td></tr>
+          <tr><td><strong>APC 538</strong></td><td>5.5"</td><td>1,500 – 8,000</td><td>22 – 32</td><td>4,500</td><td>3,150 – 5,850</td><td>High-rate, 5.5"–7" casing</td></tr>
+          <tr><td><strong>APC 625</strong></td><td>7"</td><td>3,000 – 18,000</td><td>18 – 28</td><td>9,000</td><td>6,300 – 11,700</td><td>High-volume, 7" casing</td></tr>
+        </tbody>
+      </table>
+      <div class="flag flag-gold" style="margin-top:10px;"><span class="flag-icon">★</span>Cases 2–4 use <strong>APC 538</strong> as reference pump. Pump curve polynomial calibrated to catalog data: H/stage = 37.8 − 0.00215q + 3.5×10⁻⁸q² (ft @ 60Hz). Frequency scaling by affinity laws: Q∝N, H∝N², BHP∝N³.</div>
+    </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════ TAB 2 — CASE 1 ══════════════ -->
+<!-- ══════════════════════════ TAB 2 — CASE 1 ══════════════════ -->
 <div class="tab-content" id="tab1">
-  <div style="margin-bottom:16px;">
-    <div class="flag flag-blue"><span class="flag-icon">📘</span><div><strong>Case 1 — Undersaturated Reservoir (P̄r &gt; Pb):</strong> Linear IPR (Darcy). Pwf remains above bubble point throughout the operating range. VLP is purely a liquid (single-phase) lift problem. Reservoir inflow: q = J(P̄r − Pwf).</div></div>
-  </div>
+  <div class="section-eyebrow">Case 1 — Undersaturated Reservoir · Linear Darcy IPR · P̄r &gt; Pb</div>
+  <div class="flag flag-blue" style="margin-bottom:14px;"><span class="flag-icon">📘</span><div><strong>Reservoir condition:</strong> P̄r &gt; Pb. P<sub>wf</sub> remains above bubble point. Single-phase liquid inflow — linear IPR (Darcy) is valid. VLP is a liquid-dominated lift problem. Any P<sub>wf</sub> drawn below Pb requires model upgrade to composite IPR (Case 3).</div></div>
 
   <div class="grid-panel">
-    <!-- INPUT PANEL -->
     <div>
       <div class="card">
-        <div class="card-title">⚙ Reservoir &amp; Well Parameters</div>
-        <div class="input-group"><label>Reservoir Pressure P̄r <span>(psi)</span></label><input type="number" id="c1_pr" value="3800" min="500" max="15000" oninput="calcCase1()"></div>
-        <div class="input-group"><label>Bubble Point Pb <span>(psi)</span></label><input type="number" id="c1_pb" value="1500" min="100" max="10000" oninput="calcCase1()"></div>
-        <div class="input-group"><label>Productivity Index J <span>(STB/d/psi)</span></label><input type="number" id="c1_j" value="1.8" min="0.1" max="50" step="0.1" oninput="calcCase1()"></div>
-        <div class="input-group"><label>Wellhead Pressure Pwh <span>(psi)</span></label><input type="number" id="c1_pwh" value="120" min="0" max="2000" oninput="calcCase1()"></div>
-        <div class="input-group"><label>Pump Setting Depth <span>(ft TVD)</span></label><input type="number" id="c1_depth" value="6500" min="500" max="20000" oninput="calcCase1()"></div>
-        <div class="input-group"><label>Fluid Gradient <span>(psi/ft)</span></label><input type="number" id="c1_grad" value="0.433" min="0.3" max="0.55" step="0.001" oninput="calcCase1()"></div>
-        <div class="input-group"><label>Friction Loss Coefficient <span>(psi/1000 BPD)</span></label><input type="number" id="c1_fric" value="85" min="10" max="400" oninput="calcCase1()"></div>
-        <hr class="divider">
-        <div class="card-title">⚡ ESP Parameters (APC 538)</div>
-        <div class="pump-model-badge">APC 538 · 60 Hz Reference</div>
-        <div class="input-group"><label>Number of Pump Stages</label><input type="number" id="c1_stages" value="80" min="10" max="200" oninput="calcCase1()"></div>
-        <div class="input-group"><label>VFD Frequency <span>(Hz)</span> <span id="c1_hz_val" class="range-val">60 Hz</span></label><input type="range" id="c1_hz" min="40" max="70" step="1" value="60" oninput="document.getElementById('c1_hz_val').textContent=this.value+' Hz';calcCase1()"></div>
-        <div class="btn-row"><button class="btn btn-primary" onclick="calcCase1()">▶ Calculate</button><button class="btn btn-secondary" onclick="resetCase1()">↺ Reset</button></div>
+        <div class="card-header"><div class="card-header-icon">⚙</div><div class="card-title">Reservoir &amp; Well Parameters</div></div>
+        <div class="card-body-sm">
+          <div class="inp-row">
+            <div class="inp-group"><label class="inp-label">P̄r <span class="inp-unit">(psi)</span></label><input type="number" id="c1_pr" value="3800" oninput="calcCase1()"></div>
+            <div class="inp-group"><label class="inp-label">Pb <span class="inp-unit">(psi)</span></label><input type="number" id="c1_pb" value="1500" oninput="calcCase1()"></div>
+          </div>
+          <div class="inp-group"><label class="inp-label">Productivity Index J <span class="inp-unit">(STB/d/psi)</span></label><input type="number" id="c1_j" value="1.8" step="0.1" oninput="calcCase1()"></div>
+          <hr class="inp-divider">
+          <div class="inp-row">
+            <div class="inp-group"><label class="inp-label">P<sub>wh</sub> <span class="inp-unit">(psi)</span></label><input type="number" id="c1_pwh" value="120" oninput="calcCase1()"></div>
+            <div class="inp-group"><label class="inp-label">Depth <span class="inp-unit">(ft TVD)</span></label><input type="number" id="c1_depth" value="6500" oninput="calcCase1()"></div>
+          </div>
+          <div class="inp-row">
+            <div class="inp-group"><label class="inp-label">Fluid Gradient <span class="inp-unit">(psi/ft)</span></label><input type="number" id="c1_grad" value="0.433" step="0.001" oninput="calcCase1()"></div>
+            <div class="inp-group"><label class="inp-label">Friction Coeff <span class="inp-unit">(psi/1kBPD)</span></label><input type="number" id="c1_fric" value="85" oninput="calcCase1()"></div>
+          </div>
+          <hr class="inp-divider">
+          <div class="pump-badge">⚡ APC 538 · ESP Parameters</div>
+          <div class="inp-row">
+            <div class="inp-group"><label class="inp-label">Stages</label><input type="number" id="c1_stages" value="80" oninput="calcCase1()"></div>
+            <div class="inp-group"><label class="inp-label">Frequency <span id="c1_hz_v" class="range-display">60 Hz</span></label><input type="range" id="c1_hz" min="40" max="70" step="1" value="60" oninput="document.getElementById('c1_hz_v').textContent=this.value+' Hz';calcCase1()"></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-gold" onclick="calcCase1()">▶ Calculate</button>
+            <button class="btn btn-outline btn-sm" onclick="resetCase1()">↺ Reset</button>
+          </div>
+        </div>
       </div>
 
-      <div class="result-box" id="c1_results">
-        <h4>⚡ Operating Point Results</h4>
-        <div class="result-row"><span class="result-label">Operating Flow Rate q*</span><span class="result-value" id="c1_q">—</span></div>
-        <div class="result-row"><span class="result-label">Flowing BHP P<sub>wf</sub>*</span><span class="result-value" id="c1_pwf">—</span></div>
+      <div class="result-panel" id="c1_res">
+        <div class="result-panel-title">Operating Point Results</div>
+        <div class="result-row"><span class="result-label">Flow Rate q*</span><span class="result-value" id="c1_q">—</span></div>
+        <div class="result-row"><span class="result-label">P<sub>wf</sub>*</span><span class="result-value" id="c1_pwf">—</span></div>
         <div class="result-row"><span class="result-label">Drawdown (P̄r − P<sub>wf</sub>)</span><span class="result-value" id="c1_dd">—</span></div>
-        <div class="result-row"><span class="result-label">Pump Head Required</span><span class="result-value" id="c1_head">—</span></div>
-        <div class="result-row"><span class="result-label">Pump Head Available</span><span class="result-value" id="c1_head_avail">—</span></div>
-        <div class="result-row"><span class="result-label">% of BEP Flow</span><span class="result-value" id="c1_bep_pct">—</span></div>
-        <div class="result-row"><span class="result-label">P<sub>wf</sub> vs Pb</span><span class="result-value" id="c1_pb_check">—</span></div>
-        <div id="c1_flag" style="margin-top:10px;"></div>
+        <hr class="result-divider">
+        <div class="result-row"><span class="result-label">Pump Head Available</span><span class="result-value" id="c1_ha">—</span></div>
+        <div class="result-row"><span class="result-label">% of BEP Flow</span><span class="result-value" id="c1_bep">—</span></div>
+        <div class="result-row"><span class="result-label">P<sub>wf</sub> vs Pb</span><span class="result-value" id="c1_pbck">—</span></div>
+        <div id="c1_flag"></div>
       </div>
     </div>
 
-    <!-- CHART -->
     <div>
       <div class="card">
-        <div class="card-title">📈 IPR / VLP / Pump Curve — Case 1 (Undersaturated)</div>
-        <div class="chart-container-tall" id="chart_c1"></div>
+        <div class="card-header"><div class="card-header-icon">📈</div><div class="card-title">Case 1 — IPR · VLP · APC 538 Pump Curve</div></div>
+        <div class="card-body" style="padding:10px;">
+          <div class="chart-wrap" id="chart_c1"></div>
+        </div>
       </div>
-      <div class="card" id="c1_sens_card">
-        <div class="card-title">🔄 Sensitivity: J Variation</div>
-        <div id="chart_c1_sens" style="height:260px;"></div>
+      <div class="card" style="margin-top:14px;">
+        <div class="card-header"><div class="card-header-icon">🔄</div><div class="card-title">Sensitivity — Productivity Index J Variation</div></div>
+        <div class="card-body" style="padding:8px;">
+          <div class="chart-wrap-sm" id="chart_c1_sens"></div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════ TAB 3 — CASE 2 ══════════════ -->
+<!-- ══════════════════════════ TAB 3 — CASE 2 ══════════════════ -->
 <div class="tab-content" id="tab2">
-  <div style="margin-bottom:16px;">
-    <div class="flag flag-amber"><span class="flag-icon">📙</span><div><strong>Case 2 — Solution-Gas Drive (P̄r &lt; Pb):</strong> Vogel IPR applies throughout. Reservoir is below bubble point; free gas exists in the reservoir and wellbore. IPR is non-linear. Gas interference at pump is a critical design consideration.</div></div>
-  </div>
+  <div class="section-eyebrow">Case 2 — Solution-Gas Drive · Vogel IPR · P̄r ≤ Pb</div>
+  <div class="flag flag-amber" style="margin-bottom:14px;"><span class="flag-icon">📙</span><div><strong>Reservoir condition:</strong> P̄r &lt; Pb — reservoir below bubble point. Free gas present in reservoir and wellbore. Non-linear Vogel IPR applies throughout. Gas at pump intake is the critical design constraint. Monitor GOR trend and separator efficiency.</div></div>
 
   <div class="grid-panel">
     <div>
       <div class="card">
-        <div class="card-title">⚙ Reservoir &amp; Well Parameters</div>
-        <div class="input-group"><label>Reservoir Pressure P̄r <span>(psi)</span></label><input type="number" id="c2_pr" value="2200" min="200" max="8000" oninput="calcCase2()"></div>
-        <div class="input-group"><label>Bubble Point Pb <span>(psi) — P̄r must be ≤ Pb here</span></label><input type="number" id="c2_pb" value="2800" min="100" max="10000" oninput="calcCase2()"></div>
-        <div class="input-group"><label>AOF q<sub>max</sub> <span>(STB/d) — Vogel AOF</span></label><input type="number" id="c2_qmax" value="6500" min="100" max="50000" oninput="calcCase2()"></div>
-        <div class="input-group"><label>GOR <span>(scf/STB)</span></label><input type="number" id="c2_gor" value="450" min="0" max="5000" oninput="calcCase2()"></div>
-        <div class="input-group"><label>Wellhead Pressure Pwh <span>(psi)</span></label><input type="number" id="c2_pwh" value="150" min="0" max="2000" oninput="calcCase2()"></div>
-        <div class="input-group"><label>Pump Setting Depth <span>(ft TVD)</span></label><input type="number" id="c2_depth" value="7200" min="500" max="20000" oninput="calcCase2()"></div>
-        <div class="input-group"><label>Mixed Fluid Gradient <span>(psi/ft) — accounts for GOR</span></label><input type="number" id="c2_grad" value="0.365" min="0.2" max="0.52" step="0.001" oninput="calcCase2()"></div>
-        <div class="input-group"><label>Friction Loss Coefficient <span>(psi/1000 BPD)</span></label><input type="number" id="c2_fric" value="90" min="10" max="400" oninput="calcCase2()"></div>
-        <hr class="divider">
-        <div class="card-title">⚡ ESP Parameters (APC 538)</div>
-        <div class="pump-model-badge">APC 538 · 60 Hz Reference</div>
-        <div class="input-group"><label>Number of Pump Stages</label><input type="number" id="c2_stages" value="100" min="10" max="200" oninput="calcCase2()"></div>
-        <div class="input-group"><label>VFD Frequency <span>(Hz)</span> <span id="c2_hz_val" class="range-val">60 Hz</span></label><input type="range" id="c2_hz" min="40" max="70" step="1" value="60" oninput="document.getElementById('c2_hz_val').textContent=this.value+' Hz';calcCase2()"></div>
-        <div class="input-group"><label>Gas Separator Efficiency <span>(%)</span> <span id="c2_sep_val" class="range-val">70%</span></label><input type="range" id="c2_sep" min="0" max="100" step="5" value="70" oninput="document.getElementById('c2_sep_val').textContent=this.value+'%';calcCase2()"></div>
-        <div class="btn-row"><button class="btn btn-primary" onclick="calcCase2()">▶ Calculate</button><button class="btn btn-secondary" onclick="resetCase2()">↺ Reset</button></div>
+        <div class="card-header"><div class="card-header-icon">⚙</div><div class="card-title">Reservoir &amp; Well Parameters</div></div>
+        <div class="card-body-sm">
+          <div class="inp-row">
+            <div class="inp-group"><label class="inp-label">P̄r <span class="inp-unit">(psi)</span></label><input type="number" id="c2_pr" value="2200" oninput="calcCase2()"></div>
+            <div class="inp-group"><label class="inp-label">Pb <span class="inp-unit">(psi) ≥ P̄r</span></label><input type="number" id="c2_pb" value="2800" oninput="calcCase2()"></div>
+          </div>
+          <div class="inp-group"><label class="inp-label">AOF q<sub>max</sub> <span class="inp-unit">(STB/d)</span></label><input type="number" id="c2_qmax" value="6500" oninput="calcCase2()"></div>
+          <div class="inp-row">
+            <div class="inp-group"><label class="inp-label">GOR <span class="inp-unit">(scf/STB)</span></label><input type="number" id="c2_gor" value="450" oninput="calcCase2()"></div>
+            <div class="inp-group"><label class="inp-label">P<sub>wh</sub> <span class="inp-unit">(psi)</span></label><input type="number" id="c2_pwh" value="150" oninput="calcCase2()"></div>
+          </div>
+          <div class="inp-row">
+            <div class="inp-group"><label class="inp-label">Depth <span class="inp-unit">(ft TVD)</span></label><input type="number" id="c2_depth" value="7200" oninput="calcCase2()"></div>
+            <div class="inp-group"><label class="inp-label">Mixed Gradient <span class="inp-unit">(psi/ft)</span></label><input type="number" id="c2_grad" value="0.365" step="0.001" oninput="calcCase2()"></div>
+          </div>
+          <div class="inp-group"><label class="inp-label">Friction Coeff <span class="inp-unit">(psi/1kBPD)</span></label><input type="number" id="c2_fric" value="90" oninput="calcCase2()"></div>
+          <hr class="inp-divider">
+          <div class="pump-badge">⚡ APC 538 · ESP Parameters</div>
+          <div class="inp-row">
+            <div class="inp-group"><label class="inp-label">Stages</label><input type="number" id="c2_stages" value="100" oninput="calcCase2()"></div>
+            <div class="inp-group"><label class="inp-label">Frequency <span id="c2_hz_v" class="range-display">60 Hz</span></label><input type="range" id="c2_hz" min="40" max="70" step="1" value="60" oninput="document.getElementById('c2_hz_v').textContent=this.value+' Hz';calcCase2()"></div>
+          </div>
+          <div class="inp-group"><label class="inp-label">Gas Separator Efficiency <span id="c2_sep_v" class="range-display">70%</span></label><input type="range" id="c2_sep" min="0" max="100" step="5" value="70" oninput="document.getElementById('c2_sep_v').textContent=this.value+'%';calcCase2()"></div>
+          <div class="btn-row">
+            <button class="btn btn-gold" onclick="calcCase2()">▶ Calculate</button>
+            <button class="btn btn-outline btn-sm" onclick="resetCase2()">↺ Reset</button>
+          </div>
+        </div>
       </div>
 
-      <div class="result-box" id="c2_results">
-        <h4>⚡ Operating Point Results</h4>
-        <div class="result-row"><span class="result-label">Operating Flow Rate q*</span><span class="result-value" id="c2_q">—</span></div>
-        <div class="result-row"><span class="result-label">Flowing BHP P<sub>wf</sub>*</span><span class="result-value" id="c2_pwf">—</span></div>
-        <div class="result-row"><span class="result-label">% of AOF (q<sub>max</sub>)</span><span class="result-value" id="c2_aof_pct">—</span></div>
-        <div class="result-row"><span class="result-label">Free Gas at Pump Intake</span><span class="result-value" id="c2_gas">—</span></div>
-        <div class="result-row"><span class="result-label">% of BEP Flow</span><span class="result-value" id="c2_bep_pct">—</span></div>
-        <div class="result-row"><span class="result-label">Pump Head Available</span><span class="result-value" id="c2_head_avail">—</span></div>
-        <div id="c2_flag" style="margin-top:10px;"></div>
+      <div class="result-panel">
+        <div class="result-panel-title">Operating Point Results</div>
+        <div class="result-row"><span class="result-label">Flow Rate q*</span><span class="result-value" id="c2_q">—</span></div>
+        <div class="result-row"><span class="result-label">P<sub>wf</sub>*</span><span class="result-value" id="c2_pwf">—</span></div>
+        <div class="result-row"><span class="result-label">% of AOF (q<sub>max</sub>)</span><span class="result-value" id="c2_aof">—</span></div>
+        <hr class="result-divider">
+        <div class="result-row"><span class="result-label">Free Gas at Pump (est.)</span><span class="result-value" id="c2_gas">—</span></div>
+        <div class="result-row"><span class="result-label">% of BEP Flow</span><span class="result-value" id="c2_bep">—</span></div>
+        <div class="result-row"><span class="result-label">Head Available</span><span class="result-value" id="c2_ha">—</span></div>
+        <div id="c2_flag"></div>
       </div>
     </div>
 
     <div>
       <div class="card">
-        <div class="card-title">📈 IPR / VLP / Pump Curve — Case 2 (Solution-Gas Drive)</div>
-        <div class="chart-container-tall" id="chart_c2"></div>
+        <div class="card-header"><div class="card-header-icon">📈</div><div class="card-title">Case 2 — Vogel IPR · VLP · APC 538</div></div>
+        <div class="card-body" style="padding:10px;">
+          <div class="chart-wrap" id="chart_c2"></div>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-title">🔄 Sensitivity: P̄r Decline Impact</div>
-        <div id="chart_c2_sens" style="height:260px;"></div>
+      <div class="card" style="margin-top:14px;">
+        <div class="card-header"><div class="card-header-icon">📉</div><div class="card-title">Sensitivity — P̄r Depletion Impact on IPR</div></div>
+        <div class="card-body" style="padding:8px;">
+          <div class="chart-wrap-sm" id="chart_c2_sens"></div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════ TAB 4 — CASE 3 ══════════════ -->
+<!-- ══════════════════════════ TAB 4 — CASE 3 ══════════════════ -->
 <div class="tab-content" id="tab3">
-  <div style="margin-bottom:16px;">
-    <div class="flag flag-green"><span class="flag-icon">📗</span><div><strong>Case 3 — Composite IPR + ESP (Combined System):</strong> P̄r &gt; Pb initially but Pwf drawn below Pb. Composite (Standing) IPR. APC 538 ESP overlaid with frequency sensitivity. Full VFD operating envelope shown.</div></div>
-  </div>
+  <div class="section-eyebrow">Case 3 — Composite IPR (Standing 1971) · APC 538 · Full VFD Envelope</div>
+  <div class="flag flag-green" style="margin-bottom:14px;"><span class="flag-icon">📗</span><div><strong>Combined system:</strong> P̄r &gt; Pb but ESP draws P<sub>wf</sub> below Pb. Composite Standing IPR handles both linear (above Pb) and Vogel (below Pb) regions. Full VFD frequency envelope 45–70 Hz shown with per-frequency operating points.</div></div>
 
-  <div class="grid-panel-wide">
+  <div class="grid-panel-lg">
     <div>
       <div class="card">
-        <div class="card-title">⚙ Reservoir Parameters</div>
-        <div class="input-group"><label>Reservoir Pressure P̄r <span>(psi)</span></label><input type="number" id="c3_pr" value="3500" min="500" max="15000" oninput="calcCase3()"></div>
-        <div class="input-group"><label>Bubble Point Pb <span>(psi)</span></label><input type="number" id="c3_pb" value="2400" min="100" max="10000" oninput="calcCase3()"></div>
-        <div class="input-group"><label>Productivity Index J <span>(STB/d/psi) — above Pb</span></label><input type="number" id="c3_j" value="2.2" min="0.1" max="50" step="0.1" oninput="calcCase3()"></div>
-        <div class="input-group"><label>GOR <span>(scf/STB)</span></label><input type="number" id="c3_gor" value="320" min="0" max="5000" oninput="calcCase3()"></div>
-        <hr class="divider">
-        <div class="card-title">⚙ Wellbore &amp; Surface</div>
-        <div class="input-group"><label>Wellhead Pressure Pwh <span>(psi)</span></label><input type="number" id="c3_pwh" value="100" min="0" max="2000" oninput="calcCase3()"></div>
-        <div class="input-group"><label>Pump Setting Depth <span>(ft TVD)</span></label><input type="number" id="c3_depth" value="7800" min="500" max="20000" oninput="calcCase3()"></div>
-        <div class="input-group"><label>Liquid Gradient <span>(psi/ft)</span></label><input type="number" id="c3_grad" value="0.41" min="0.25" max="0.52" step="0.001" oninput="calcCase3()"></div>
-        <div class="input-group"><label>Friction Loss Coefficient <span>(psi/1000 BPD)</span></label><input type="number" id="c3_fric" value="80" min="10" max="400" oninput="calcCase3()"></div>
-        <hr class="divider">
-        <div class="card-title">⚡ APC 538 ESP Parameters</div>
-        <div class="pump-model-badge">APC 538 · Composite Well</div>
-        <div class="input-group"><label>Number of Pump Stages</label><input type="number" id="c3_stages" value="90" min="10" max="200" oninput="calcCase3()"></div>
-        <div class="input-group"><label>Operating Frequency <span>(Hz)</span> <span id="c3_hz_val" class="range-val">60 Hz</span></label><input type="range" id="c3_hz" min="40" max="70" step="1" value="60" oninput="document.getElementById('c3_hz_val').textContent=this.value+' Hz';calcCase3()"></div>
-        <div class="btn-row"><button class="btn btn-primary" onclick="calcCase3()">▶ Calculate</button><button class="btn btn-secondary" onclick="resetCase3()">↺ Reset</button></div>
+        <div class="card-header"><div class="card-header-icon">⚙</div><div class="card-title">Reservoir Parameters</div></div>
+        <div class="card-body-sm">
+          <div class="inp-row">
+            <div class="inp-group"><label class="inp-label">P̄r <span class="inp-unit">(psi)</span></label><input type="number" id="c3_pr" value="3500" oninput="calcCase3()"></div>
+            <div class="inp-group"><label class="inp-label">Pb <span class="inp-unit">(psi)</span></label><input type="number" id="c3_pb" value="2400" oninput="calcCase3()"></div>
+          </div>
+          <div class="inp-row">
+            <div class="inp-group"><label class="inp-label">J <span class="inp-unit">(STB/d/psi)</span></label><input type="number" id="c3_j" value="2.2" step="0.1" oninput="calcCase3()"></div>
+            <div class="inp-group"><label class="inp-label">GOR <span class="inp-unit">(scf/STB)</span></label><input type="number" id="c3_gor" value="320" oninput="calcCase3()"></div>
+          </div>
+          <hr class="inp-divider">
+          <div class="inp-row">
+            <div class="inp-group"><label class="inp-label">P<sub>wh</sub> <span class="inp-unit">(psi)</span></label><input type="number" id="c3_pwh" value="100" oninput="calcCase3()"></div>
+            <div class="inp-group"><label class="inp-label">Depth <span class="inp-unit">(ft TVD)</span></label><input type="number" id="c3_depth" value="7800" oninput="calcCase3()"></div>
+          </div>
+          <div class="inp-row">
+            <div class="inp-group"><label class="inp-label">Gradient <span class="inp-unit">(psi/ft)</span></label><input type="number" id="c3_grad" value="0.41" step="0.001" oninput="calcCase3()"></div>
+            <div class="inp-group"><label class="inp-label">Friction <span class="inp-unit">(psi/1kBPD)</span></label><input type="number" id="c3_fric" value="80" oninput="calcCase3()"></div>
+          </div>
+          <hr class="inp-divider">
+          <div class="pump-badge">⚡ APC 538 · ESP + VFD</div>
+          <div class="inp-row">
+            <div class="inp-group"><label class="inp-label">Stages</label><input type="number" id="c3_stages" value="90" oninput="calcCase3()"></div>
+            <div class="inp-group"><label class="inp-label">Operating Hz <span id="c3_hz_v" class="range-display">60 Hz</span></label><input type="range" id="c3_hz" min="40" max="70" step="1" value="60" oninput="document.getElementById('c3_hz_v').textContent=this.value+' Hz';calcCase3()"></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-gold" onclick="calcCase3()">▶ Calculate</button>
+            <button class="btn btn-outline btn-sm" onclick="resetCase3()">↺ Reset</button>
+          </div>
+        </div>
       </div>
 
-      <div class="result-box">
-        <h4>⚡ Operating Point Results</h4>
-        <div class="result-row"><span class="result-label">Operating Flow Rate q*</span><span class="result-value" id="c3_q">—</span></div>
-        <div class="result-row"><span class="result-label">Flowing BHP P<sub>wf</sub>*</span><span class="result-value" id="c3_pwf">—</span></div>
-        <div class="result-row"><span class="result-label">Composite IPR Region</span><span class="result-value" id="c3_region">—</span></div>
+      <div class="result-panel">
+        <div class="result-panel-title">Operating Point Results</div>
+        <div class="result-row"><span class="result-label">Flow Rate q*</span><span class="result-value" id="c3_q">—</span></div>
+        <div class="result-row"><span class="result-label">P<sub>wf</sub>*</span><span class="result-value" id="c3_pwf">—</span></div>
+        <div class="result-row"><span class="result-label">IPR Region Active</span><span class="result-value" id="c3_reg">—</span></div>
         <div class="result-row"><span class="result-label">q<sub>b</sub> (flow at Pb)</span><span class="result-value" id="c3_qb">—</span></div>
-        <div class="result-row"><span class="result-label">Pump Head Available</span><span class="result-value" id="c3_head_avail">—</span></div>
-        <div class="result-row"><span class="result-label">% of BEP Flow</span><span class="result-value" id="c3_bep_pct">—</span></div>
-        <div id="c3_flag" style="margin-top:10px;"></div>
+        <hr class="result-divider">
+        <div class="result-row"><span class="result-label">Head Available</span><span class="result-value" id="c3_ha">—</span></div>
+        <div class="result-row"><span class="result-label">% of BEP Flow</span><span class="result-value" id="c3_bep">—</span></div>
+        <div id="c3_flag"></div>
       </div>
 
-      <div class="card" style="margin-top:16px;">
-        <div class="card-title">📊 VFD Frequency Sensitivity</div>
-        <table class="sens-table" id="c3_freq_table">
-          <thead><tr><th>Freq (Hz)</th><th>q* (BPD)</th><th>Pwf* (psi)</th><th>Head Avail (ft)</th><th>% BEP</th><th>Status</th></tr></thead>
-          <tbody id="c3_freq_tbody"></tbody>
-        </table>
+      <div class="card" style="margin-top:14px;">
+        <div class="card-header"><div class="card-header-icon">📊</div><div class="card-title">VFD Frequency Sensitivity Table</div></div>
+        <div class="card-body" style="padding:8px;">
+          <table class="sens-table">
+            <thead><tr><th>Hz</th><th>q* (BPD)</th><th>Pwf* (psi)</th><th>Head (ft)</th><th>% BEP</th><th>Status</th></tr></thead>
+            <tbody id="c3_freq_tbody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
     <div>
       <div class="card">
-        <div class="card-title">📈 Composite IPR + VLP + APC 538 Pump Curve with VFD Envelope</div>
-        <div class="chart-container-tall" id="chart_c3"></div>
+        <div class="card-header"><div class="card-header-icon">📈</div><div class="card-title">Composite IPR + VLP Envelope (45–70 Hz) · APC 538</div></div>
+        <div class="card-body" style="padding:10px;">
+          <div class="chart-wrap" id="chart_c3"></div>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-title">📈 Pump Curve — APC 538 at Multiple Frequencies</div>
-        <div id="chart_c3_pump" style="height:300px;"></div>
+      <div class="card" style="margin-top:14px;">
+        <div class="card-header"><div class="card-header-icon">⚡</div><div class="card-title">APC 538 Pump Head Curves — 45 to 70 Hz</div></div>
+        <div class="card-body" style="padding:8px;">
+          <div class="chart-wrap-md" id="chart_c3_pump"></div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════ TAB 5 — FROM DATA ══════════════ -->
+<!-- ══════════════════════════ TAB 5 — FROM DATA ══════════════════ -->
 <div class="tab-content" id="tab4">
-  <div style="margin-bottom:16px;">
-    <div class="flag flag-blue"><span class="flag-icon">📊</span><div><strong>Optional Module — IPR from Production Test Data:</strong> Enter 2–4 flowing test points (q, Pwf pairs). The tool auto-fits the best IPR model, estimates P̄r and J (or q<sub>max</sub>), builds the VLP, and finds the operating point. Useful for wells without static BHP surveys.</div></div>
-  </div>
+  <div class="section-eyebrow">Optional Module — IPR Auto-Fit from Production Test Data</div>
+  <div class="flag flag-blue" style="margin-bottom:14px;"><span class="flag-icon">📊</span><div><strong>Data-Driven IPR:</strong> Enter 2–4 flowing test points (q, P<sub>wf</sub> pairs). Tool auto-fits Linear or Vogel model, estimates P̄r, J, and q<sub>max</sub>, reports R² fit quality, builds VLP, and finds the operating point. Minimum 3 points recommended for reliable regression.</div></div>
 
-  <div class="grid-panel">
+  <div class="grid-panel-lg">
     <div>
       <div class="card">
-        <div class="card-title">📋 Production Test Data Entry</div>
-        <div class="input-group">
-          <label>IPR Model <span>(select or let tool auto-detect)</span></label>
-          <select id="td_model" onchange="updateDataTab()">
-            <option value="auto">Auto-Detect (recommended)</option>
-            <option value="linear">Linear / Undersaturated (Darcy)</option>
-            <option value="vogel">Vogel (Solution-Gas Drive)</option>
-            <option value="composite">Composite (Standing)</option>
-          </select>
-        </div>
-        <div class="input-group">
-          <label>Static BHP / Estimated P̄r <span>(psi, optional)</span></label>
-          <input type="number" id="td_pr_hint" value="" placeholder="Leave blank to estimate from data" oninput="fitIPR()">
-        </div>
-        <div class="input-group">
-          <label>Bubble Point Pb <span>(psi, optional for composite)</span></label>
-          <input type="number" id="td_pb" value="" placeholder="Required for composite model" oninput="fitIPR()">
-        </div>
-        <hr class="divider">
-        <div class="card-title" style="margin-bottom:8px;">Test Points (q in STB/d, Pwf in psi)</div>
-        <div style="display:grid;grid-template-columns:40px 1fr 1fr 40px;gap:4px;margin-bottom:6px;">
-          <div style="font-size:10px;color:var(--apc-muted);text-align:center;">#</div>
-          <div style="font-size:10px;color:var(--apc-muted);font-weight:600;">Flow Rate q (STB/d)</div>
-          <div style="font-size:10px;color:var(--apc-muted);font-weight:600;">Flowing BHP Pwf (psi)</div>
-          <div></div>
-        </div>
-        <div id="test_points_container"></div>
-        <div class="btn-row">
-          <button class="btn btn-secondary btn-sm" onclick="addTestPoint()">+ Add Point</button>
-          <button class="btn btn-primary" onclick="fitIPR()">▶ Fit IPR &amp; Plot</button>
-        </div>
-        <hr class="divider">
-        <div class="card-title">⚙ VLP Parameters</div>
-        <div class="input-group"><label>Wellhead Pressure Pwh <span>(psi)</span></label><input type="number" id="td_pwh" value="120" oninput="fitIPR()"></div>
-        <div class="input-group"><label>Pump Setting Depth <span>(ft TVD)</span></label><input type="number" id="td_depth" value="7000" oninput="fitIPR()"></div>
-        <div class="input-group"><label>Fluid Gradient <span>(psi/ft)</span></label><input type="number" id="td_grad" value="0.42" step="0.001" oninput="fitIPR()"></div>
-        <div class="input-group"><label>Friction Coefficient <span>(psi/1000 BPD)</span></label><input type="number" id="td_fric" value="85" oninput="fitIPR()"></div>
-        <hr class="divider">
-        <div class="card-title">⚡ APC 538 ESP (Optional)</div>
-        <div class="input-group"><label>Include ESP?</label>
-          <select id="td_use_esp" onchange="fitIPR()">
-            <option value="no">No — Natural Flow</option>
-            <option value="yes">Yes — APC 538</option>
-          </select>
-        </div>
-        <div id="td_esp_panel" style="display:none;">
-          <div class="input-group"><label>Stages</label><input type="number" id="td_stages" value="80" oninput="fitIPR()"></div>
-          <div class="input-group"><label>Frequency (Hz) <span id="td_hz_val" class="range-val">60 Hz</span></label><input type="range" id="td_hz" min="40" max="70" step="1" value="60" oninput="document.getElementById('td_hz_val').textContent=this.value+' Hz';fitIPR()"></div>
+        <div class="card-header"><div class="card-header-icon">📋</div><div class="card-title">Production Test Points</div></div>
+        <div class="card-body-sm">
+          <div class="inp-group">
+            <label class="inp-label">IPR Model</label>
+            <select id="td_model" onchange="fitIPR()">
+              <option value="auto">Auto-Detect (recommended)</option>
+              <option value="linear">Linear / Darcy (undersaturated)</option>
+              <option value="vogel">Vogel (solution-gas drive)</option>
+            </select>
+          </div>
+          <div class="inp-row">
+            <div class="inp-group"><label class="inp-label">P̄r Hint <span class="inp-unit">(psi, optional)</span></label><input type="number" id="td_pr_hint" placeholder="Estimate or leave blank" oninput="fitIPR()"></div>
+            <div class="inp-group"><label class="inp-label">Pb <span class="inp-unit">(psi, optional)</span></label><input type="number" id="td_pb" placeholder="For composite" oninput="fitIPR()"></div>
+          </div>
+          <hr class="inp-divider">
+          <div class="tp-header">
+            <div class="tp-col-label">#</div>
+            <div class="tp-col-label">q (STB/d)</div>
+            <div class="tp-col-label">Pwf (psi)</div>
+            <div></div>
+          </div>
+          <div id="tp_container"></div>
+          <div class="btn-row">
+            <button class="btn btn-outline btn-sm" onclick="addTP()">+ Point</button>
+            <button class="btn btn-gold" onclick="fitIPR()">▶ Fit &amp; Plot</button>
+          </div>
+          <hr class="inp-divider">
+          <div style="font-size:10px;font-weight:700;color:var(--gold);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;">VLP Parameters</div>
+          <div class="inp-row">
+            <div class="inp-group"><label class="inp-label">P<sub>wh</sub> <span class="inp-unit">(psi)</span></label><input type="number" id="td_pwh" value="120" oninput="fitIPR()"></div>
+            <div class="inp-group"><label class="inp-label">Depth <span class="inp-unit">(ft)</span></label><input type="number" id="td_depth" value="7000" oninput="fitIPR()"></div>
+          </div>
+          <div class="inp-row">
+            <div class="inp-group"><label class="inp-label">Gradient <span class="inp-unit">(psi/ft)</span></label><input type="number" id="td_grad" value="0.42" step="0.001" oninput="fitIPR()"></div>
+            <div class="inp-group"><label class="inp-label">Friction <span class="inp-unit">(psi/1kBPD)</span></label><input type="number" id="td_fric" value="85" oninput="fitIPR()"></div>
+          </div>
+          <hr class="inp-divider">
+          <div style="font-size:10px;font-weight:700;color:var(--gold);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;">ESP (Optional)</div>
+          <div class="inp-group">
+            <label class="inp-label">Include APC 538 ESP?</label>
+            <select id="td_esp" onchange="document.getElementById('td_esp_extra').style.display=this.value==='yes'?'block':'none';fitIPR()">
+              <option value="no">No — Natural Flow</option>
+              <option value="yes">Yes — APC 538</option>
+            </select>
+          </div>
+          <div id="td_esp_extra" style="display:none;">
+            <div class="inp-row">
+              <div class="inp-group"><label class="inp-label">Stages</label><input type="number" id="td_stages" value="80" oninput="fitIPR()"></div>
+              <div class="inp-group"><label class="inp-label">Hz <span id="td_hz_v" class="range-display">60 Hz</span></label><input type="range" id="td_hz" min="40" max="70" step="1" value="60" oninput="document.getElementById('td_hz_v').textContent=this.value+' Hz';fitIPR()"></div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="result-box" id="td_results" style="display:none;">
-        <h4>📐 Fitted IPR Parameters</h4>
-        <div class="result-row"><span class="result-label">Model Used</span><span class="result-value" id="td_model_used">—</span></div>
-        <div class="result-row"><span class="result-label">Estimated P̄r</span><span class="result-value" id="td_pr_est">—</span></div>
-        <div class="result-row"><span class="result-label">Productivity Index J</span><span class="result-value" id="td_j_est">—</span></div>
-        <div class="result-row"><span class="result-label">AOF q<sub>max</sub></span><span class="result-value" id="td_qmax_est">—</span></div>
+      <div class="result-panel" id="td_res" style="display:none;">
+        <div class="result-panel-title">Fitted IPR Parameters</div>
+        <div class="result-row"><span class="result-label">Model Selected</span><span class="result-value" id="td_mod">—</span></div>
+        <div class="result-row"><span class="result-label">Estimated P̄r</span><span class="result-value" id="td_pr">—</span></div>
+        <div class="result-row"><span class="result-label">Productivity Index J</span><span class="result-value" id="td_j">—</span></div>
+        <div class="result-row"><span class="result-label">AOF q<sub>max</sub></span><span class="result-value" id="td_qm">—</span></div>
         <div class="result-row"><span class="result-label">R² Fit Quality</span><span class="result-value" id="td_r2">—</span></div>
-        <hr style="border-color:rgba(255,255,255,0.15);margin:10px 0;">
-        <h4>⚡ Operating Point</h4>
-        <div class="result-row"><span class="result-label">q*</span><span class="result-value" id="td_q">—</span></div>
+        <hr class="result-divider">
+        <div class="result-row"><span class="result-label">Operating Point q*</span><span class="result-value" id="td_q">—</span></div>
         <div class="result-row"><span class="result-label">P<sub>wf</sub>*</span><span class="result-value" id="td_pwf">—</span></div>
-        <div id="td_flag" style="margin-top:10px;"></div>
+        <div id="td_flag"></div>
       </div>
     </div>
 
     <div>
       <div class="card">
-        <div class="card-title">📈 Fitted IPR + VLP + Operating Point</div>
-        <div class="chart-container-tall" id="chart_td"></div>
+        <div class="card-header"><div class="card-header-icon">📈</div><div class="card-title">Fitted IPR + VLP + Operating Point</div></div>
+        <div class="card-body" style="padding:10px;">
+          <div class="chart-wrap" id="chart_td"></div>
+        </div>
       </div>
-      <div class="card" id="td_table_card" style="display:none;">
-        <div class="card-title">📋 Fitted IPR Table</div>
-        <div id="td_ipr_table_container"></div>
+      <div class="card" style="margin-top:14px;" id="td_table_card">
+        <div class="card-header"><div class="card-header-icon">📋</div><div class="card-title">Fitted IPR Table</div></div>
+        <div class="card-body" style="padding:8px;" id="td_table_body"></div>
       </div>
     </div>
   </div>
@@ -773,734 +893,463 @@
 </div><!-- end .main -->
 
 <footer class="site-footer">
-  APC Nodal Analysis Tool · GOS NAVIGATE Programme · Alkhorayef Petroleum Company · 
-  References: Vogel (1968), Standing (1971), Beggs (1991), Takács (2009) · 
-  Pump data: APC Product Catalog 2017 (APC 538 Series)
+  <strong>Alkhorayef Petroleum Company</strong> · IPR–VLP Nodal Analysis Tool · GOS NAVIGATE Programme ·
+  References: Vogel (1968) · Standing (1971) · Beggs (1991) · Takács (2009) ·
+  APC Pump Catalog 2017 (APC 538 Series)
 </footer>
 
 <script>
 // ═══════════════════════════════════════════════════════════════════
-// APC 538 PUMP CURVE DATA (60 Hz reference, head per stage in ft)
-// Polynomial fit to representative APC 538 performance
-// q in BPD, head_per_stage in ft, eff in fraction
+// APC 538 PUMP MODEL
 // ═══════════════════════════════════════════════════════════════════
-const APC538 = {
-  name: 'APC 538',
-  bep_60hz: 4500,     // BPD at BEP, 60Hz
-  qmin_60hz: 1500,    // min recommended flow
-  qmax_60hz: 8000,    // max flow
-  // Head per stage at 60Hz (ft) — polynomial coefficients: H = a + b*q + c*q²
-  // Calibrated: H(1500)=31, H(4500)=26, H(8000)=8
-  headCoeffs: [37.5, -0.000833, -0.000000278],  // a, b*1e3, c*1e6 — actual in func below
-  // BHP per stage at 60Hz (HP/stage) — approximate
-  bhpCoeffs: [0.18, 0.000045, 0.0],
-};
-
-function pumpHead60(q_bpd) {
-  // Head per stage, ft, at 60 Hz
-  // Polynomial: H = 37.5 - 0.00185*q + 0.0000000220*q² (approximately)
-  // Calibrated points: q=1500→31ft, q=4500→25ft, q=7000→12ft, q=8000→6ft
-  const h = 37.8 - 0.00215 * q_bpd + 3.5e-8 * q_bpd * q_bpd;
-  return Math.max(0, h);
-}
-
-function pumpHeadAtHz(q_bpd, hz) {
-  // Affinity laws: Q ∝ N, H ∝ N²
-  const ratio = hz / 60;
-  const q_equiv = q_bpd / ratio;           // equivalent 60Hz flow
-  const h60 = pumpHead60(q_equiv);
-  return h60 * ratio * ratio;              // scale head by N²
-}
-
-function pumpBEP(hz) { return APC538.bep_60hz * (hz / 60); }
-function pumpQmin(hz) { return APC538.qmin_60hz * (hz / 60); }
-function pumpQmax(hz) { return APC538.qmax_60hz * (hz / 60); }
-
-// Generate pump curve arrays at given hz and stages
-function genPumpCurve(hz, stages) {
-  const qArr = [], hArr = [];
-  const qmx = pumpQmax(hz) * 1.05;
-  for (let q = 0; q <= qmx; q += 100) {
-    const h = pumpHead60(q / (hz/60)) * (hz/60) * (hz/60) * stages;
-    qArr.push(q);
-    hArr.push(Math.max(0, h));
-  }
-  return { q: qArr, h: hArr };
-}
-
-// Convert pump head (ft) to pressure (psi)
-function headToPsi(h_ft, grad) { return h_ft * grad; }
-function psiToFt(psi, grad) { return psi / grad; }
+function pH60(q){return Math.max(0,37.8-0.00215*q+3.5e-8*q*q);}
+function pHhz(q,hz){const r=hz/60,qe=q/r;return pH60(qe)*r*r;}
+function pBEP(hz){return 4500*(hz/60);}
+function pQmin(hz){return 1500*(hz/60);}
+function pQmax(hz){return 8000*(hz/60);}
+function hStages(q,hz,st){return pHhz(q,hz)*st;}
 
 // ═══════════════════════════════════════════════════════════════════
-// VLP CALCULATION
-// P_wf = Pwh + (grad * depth) + friction*(q/1000)² - pump_psi
-// Simple model: gravity + friction - pump uplift
+// VLP
 // ═══════════════════════════════════════════════════════════════════
-function calcVLP(q, pwh, depth, grad, fric, stages, hz) {
-  const gravity = grad * depth;
-  const friction = fric * Math.pow(q / 1000, 1.85);  // turbulent friction
-  const pump_head_ft = pumpHead60(q / (hz/60)) * (hz/60) * (hz/60) * stages;
-  const pump_psi = pump_head_ft * grad;
-  return pwh + gravity + friction - pump_psi;
-}
+function vlpNat(q,pwh,d,g,f){return pwh+g*d+f*Math.pow(q/1000,1.85);}
+function vlpESP(q,pwh,d,g,f,st,hz){return vlpNat(q,pwh,d,g,f)-hStages(q,hz,st)*g;}
 
-function calcVLPNatural(q, pwh, depth, grad, fric) {
-  const gravity = grad * depth;
-  const friction = fric * Math.pow(q / 1000, 1.85);
-  return pwh + gravity + friction;
+// ═══════════════════════════════════════════════════════════════════
+// IPR
+// ═══════════════════════════════════════════════════════════════════
+function iprLin(q,pr,J){return pr-q/J;}
+function iprVog(q,qm,pr){
+  if(q>=qm)return 0;
+  const r=q/qm,a=0.8,b=0.2,c=-(1-r);
+  const x=(-b+Math.sqrt(b*b-4*a*c))/(2*a);
+  return Math.max(0,x*pr);
+}
+function iprComp(q,pr,pb,J){
+  const qb=J*(pr-pb);
+  if(q<=qb)return Math.max(0,pr-q/J);
+  const qmb=qb+(J*pb/1.8),dq=q-qb,dqm=qmb-qb;
+  if(dq>=dqm)return 0;
+  const r=dq/dqm,a=0.8,b=0.2,c=-(1-r);
+  const x=(-b+Math.sqrt(b*b-4*a*c))/(2*a);
+  return Math.max(0,x*pb);
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// IPR FUNCTIONS
+// SOLVER
 // ═══════════════════════════════════════════════════════════════════
-function iprLinear(q, pr, J) { return pr - q / J; }
-function iprVogel(q, qmax, pr) {
-  // solve: q/qmax = 1 - 0.2x - 0.8x² where x = pwf/pr
-  // given q, find pwf: 0.8x² + 0.2x - (1 - q/qmax) = 0
-  const ratio = q / qmax;
-  if (ratio >= 1) return 0;
-  const a = 0.8, b = 0.2, c = -(1 - ratio);
-  const disc = b*b - 4*a*c;
-  if (disc < 0) return 0;
-  const x = (-b + Math.sqrt(disc)) / (2*a);
-  return Math.max(0, x * pr);
-}
-
-function iprComposite(q, pr, pb, J) {
-  const qb = J * (pr - pb);
-  if (q <= qb) {
-    // Above Pb — linear
-    return pr - q / J;
-  } else {
-    // Below Pb — Vogel extension
-    const qmax_below = qb + (J * pb / 1.8);
-    if (q >= qmax_below) return 0;
-    const dq = q - qb;
-    const dqmax = qmax_below - qb;
-    const ratio = dq / dqmax;
-    if (ratio >= 1) return 0;
-    const a = 0.8, b2 = 0.2, c2 = -(1 - ratio);
-    const disc = b2*b2 - 4*a*c2;
-    if (disc < 0) return 0;
-    const x = (-b2 + Math.sqrt(disc)) / (2*a);
-    return Math.max(0, x * pb);
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// OPERATING POINT SOLVER (bisection)
-// ═══════════════════════════════════════════════════════════════════
-function findOperatingPoint(iprFn, vlpFn, qLow=50, qHigh=20000, tol=10) {
-  let fLow = iprFn(qLow) - vlpFn(qLow);
-  let fHigh = iprFn(qHigh) - vlpFn(qHigh);
-  if (fLow * fHigh > 0) {
-    // Try to find bracket
-    for (let q = 100; q <= 20000; q += 100) {
-      const f = iprFn(q) - vlpFn(q);
-      if (!isNaN(f)) {
-        if (fLow * f < 0) { qHigh = q; fHigh = f; break; }
-        fLow = f; qLow = q;
-      }
+function solve(iF,vF,lo=50,hi=20000){
+  let fl=iF(lo)-vF(lo),fh=iF(hi)-vF(hi);
+  if(fl*fh>0){
+    for(let q=100;q<=20000;q+=100){
+      const f=iF(q)-vF(q);
+      if(isNaN(f))continue;
+      if(fl*f<0){hi=q;fh=f;break;}
+      fl=f;lo=q;
     }
-    if (fLow * fHigh > 0) return null;
+    if(fl*fh>0)return null;
   }
-  for (let i = 0; i < 60; i++) {
-    const qMid = (qLow + qHigh) / 2;
-    const fMid = iprFn(qMid) - vlpFn(qMid);
-    if (Math.abs(qHigh - qLow) < tol) return { q: qMid, pwf: iprFn(qMid) };
-    if (fLow * fMid < 0) { qHigh = qMid; fHigh = fMid; }
-    else { qLow = qMid; fLow = fMid; }
+  for(let i=0;i<60;i++){
+    const m=(lo+hi)/2,fm=iF(m)-vF(m);
+    if(Math.abs(hi-lo)<5)return{q:m,pwf:iF(m)};
+    fl*fm<0?(hi=m,fh=fm):(lo=m,fl=fm);
   }
-  const qMid = (qLow + qHigh) / 2;
-  return { q: qMid, pwf: iprFn(qMid) };
+  return{q:(lo+hi)/2,pwf:iF((lo+hi)/2)};
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// PLOTLY LAYOUT BASE
+// PLOTLY HELPERS
 // ═══════════════════════════════════════════════════════════════════
-function baseLayout(title, xLabel='Production Rate (STB/d)', yLabel='Bottomhole Flowing Pressure (psi)') {
-  return {
-    title: { text: title, font: { size: 13, color: '#2B2118', family: 'Segoe UI,Arial,sans-serif' } },
-    xaxis: { title: xLabel, gridcolor: '#EEE', zeroline: true, zerolinecolor: '#CCC' },
-    yaxis: { title: yLabel, gridcolor: '#EEE', zeroline: true, zerolinecolor: '#CCC', rangemode: 'tozero' },
-    plot_bgcolor: '#FAFAFA',
-    paper_bgcolor: '#FFFFFF',
-    font: { family: 'Segoe UI,Arial,sans-serif', size: 11 },
-    legend: { x: 0.98, y: 0.98, xanchor: 'right', bgcolor: 'rgba(255,255,255,0.85)', bordercolor: '#CCC', borderwidth: 1 },
-    margin: { l: 65, r: 20, t: 45, b: 55 },
-    hovermode: 'x unified',
+const COLORS={ipr:'#B8964A',vlpNat:'#6B6B6B',vlpESP:'#2E6B3E',op:'#8B1A1A',freq:['#9B9B9B','#D4B06A','#B8964A','#2E6B3E','#1A3A6A','#4A2060']};
+
+function layout(title,xl='Production Rate (STB/d)',yl='Bottomhole Flowing Pressure (psi)'){
+  return{
+    title:{text:title,font:{size:12,color:'#2A2A2A',family:'Segoe UI,Arial,sans-serif'}},
+    xaxis:{title:xl,gridcolor:'#EEE',zeroline:true,zerolinecolor:'#DDD',titlefont:{size:11}},
+    yaxis:{title:yl,gridcolor:'#EEE',zeroline:true,zerolinecolor:'#DDD',rangemode:'tozero',titlefont:{size:11}},
+    plot_bgcolor:'#FAFAF8',paper_bgcolor:'#FFFFFF',
+    font:{family:'Segoe UI,Arial,sans-serif',size:10,color:'#4A4A4A'},
+    legend:{x:0.98,y:0.98,xanchor:'right',bgcolor:'rgba(255,255,255,0.9)',bordercolor:'#E2D9C8',borderwidth:1,font:{size:10}},
+    margin:{l:65,r:20,t:42,b:55},hovermode:'x unified'
   };
 }
-
-function makeScatter(x, y, name, color, dash='solid', width=2, mode='lines') {
-  return { x, y, name, mode, line: { color, width, dash }, type: 'scatter', hovertemplate: `<b>${name}</b><br>q=%{x:.0f} BPD<br>Pwf=%{y:.0f} psi<extra></extra>` };
+function line(x,y,name,color,dash='solid',w=2){
+  return{x,y,name,mode:'lines',line:{color,width:w,dash},type:'scatter',
+    hovertemplate:`<b>${name}</b><br>q=%{x:.0f} BPD<br>%{y:.0f} psi<extra></extra>`};
 }
-
-function makePoint(x, y, name, color, size=12) {
-  return { x: [x], y: [y], name, mode: 'markers', marker: { color, size, symbol: 'star', line: { color: '#fff', width: 1 } }, type: 'scatter', hovertemplate: `<b>${name}</b><br>q=%{x:.0f} BPD<br>Pwf=%{y:.0f} psi<extra></extra>` };
+function pt(x,y,name,color,sym='star',sz=12){
+  return{x:[x],y:[y],name,mode:'markers',marker:{color,size:sz,symbol:sym,line:{color:'#fff',width:1.5}},type:'scatter',
+    hovertemplate:`<b>${name}</b><br>q=%{x:.0f} BPD<br>%{y:.0f} psi<extra></extra>`};
+}
+function hline(y,name,color,qmax){
+  return{x:[0,qmax],y:[y,y],name,mode:'lines',line:{color,width:1,dash:'dot'},type:'scatter',showlegend:true};
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// CASE 1 — UNDERSATURATED
+// BEP CLASS
 // ═══════════════════════════════════════════════════════════════════
-function calcCase1() {
-  const pr = +document.getElementById('c1_pr').value;
-  const pb = +document.getElementById('c1_pb').value;
-  const J  = +document.getElementById('c1_j').value;
-  const pwh = +document.getElementById('c1_pwh').value;
-  const depth = +document.getElementById('c1_depth').value;
-  const grad  = +document.getElementById('c1_grad').value;
-  const fric  = +document.getElementById('c1_fric').value;
-  const stages = +document.getElementById('c1_stages').value;
-  const hz = +document.getElementById('c1_hz').value;
+function bepCls(pct){return pct>=70&&pct<=130?'ok':pct>=50&&pct<=150?'warn':'bad';}
+function bepLbl(pct){return pct>=70&&pct<=130?'✅ Within ROW':pct<70?'⚠ Below ROW':'⚠ Above ROW';}
 
-  const qArr = [], iprArr = [], vlpNatArr = [], vlpEspArr = [];
-  const qMax = J * pr * 1.1;
-  const step = qMax / 200;
+// ═══════════════════════════════════════════════════════════════════
+// CASE 1
+// ═══════════════════════════════════════════════════════════════════
+function calcCase1(){
+  const pr=+document.getElementById('c1_pr').value,pb=+document.getElementById('c1_pb').value;
+  const J=+document.getElementById('c1_j').value,pwh=+document.getElementById('c1_pwh').value;
+  const d=+document.getElementById('c1_depth').value,g=+document.getElementById('c1_grad').value;
+  const f=+document.getElementById('c1_fric').value,st=+document.getElementById('c1_stages').value;
+  const hz=+document.getElementById('c1_hz').value;
 
-  for (let q = 0; q <= qMax; q += step) {
-    const pwf_ipr = iprLinear(q, pr, J);
-    const pwf_vlp_nat = calcVLPNatural(q, pwh, depth, grad, fric);
-    const pwf_vlp_esp = calcVLP(q, pwh, depth, grad, fric, stages, hz);
-    if (pwf_ipr >= 0) {
-      qArr.push(q);
-      iprArr.push(pwf_ipr);
-      vlpNatArr.push(pwf_vlp_nat);
-      vlpEspArr.push(Math.max(0, pwf_vlp_esp));
-    }
+  const qMax=J*pr,step=qMax/200;
+  const qA=[],iA=[],vNA=[],vEA=[];
+  for(let q=0;q<=qMax*1.05;q+=step){
+    const pi=iprLin(q,pr,J);if(pi<0)break;
+    qA.push(q);iA.push(pi);
+    vNA.push(vlpNat(q,pwh,d,g,f));
+    vEA.push(Math.max(0,vlpESP(q,pwh,d,g,f,st,hz)));
   }
 
-  // Operating points
-  const op_nat = findOperatingPoint(
-    q => iprLinear(q, pr, J),
-    q => calcVLPNatural(q, pwh, depth, grad, fric)
-  );
-  const op_esp = findOperatingPoint(
-    q => iprLinear(q, pr, J),
-    q => calcVLP(q, pwh, depth, grad, fric, stages, hz)
-  );
+  const opN=solve(q=>iprLin(q,pr,J),q=>vlpNat(q,pwh,d,g,f));
+  const opE=solve(q=>iprLin(q,pr,J),q=>vlpESP(q,pwh,d,g,f,st,hz));
 
-  // Pump curve overlay (convert from head ft to equivalent BHP Pwf)
-  const pumpQ = [], pumpH = [];
-  const bep_hz = pumpBEP(hz);
-  for (let q = 0; q <= pumpQmax(hz)*1.1; q += 100) {
-    const h_ft = pumpHead60(q/(hz/60)) * (hz/60)**2 * stages;
-    pumpQ.push(q);
-    pumpH.push(h_ft);
-  }
-
-  // Plot
-  const traces = [
-    makeScatter(qArr, iprArr, 'IPR (Linear / Undersaturated)', '#C85A00', 'solid', 3),
-    makeScatter(qArr, vlpNatArr, 'VLP — Natural Flow', '#4A7FB5', 'dash', 2),
-    makeScatter(qArr, vlpEspArr, `VLP — APC 538 ESP (${hz} Hz, ${stages} stg)`, '#2E6B3E', 'solid', 2.5),
+  const tr=[
+    line(qA,iA,'IPR (Linear — Darcy)',COLORS.ipr,'solid',3),
+    line(qA,vNA,'VLP — Natural Flow',COLORS.vlpNat,'dash',1.5),
+    line(qA,vEA,`VLP — APC 538 (${hz}Hz · ${st}stg)`,COLORS.vlpESP,'solid',2.5),
+    hline(pb,'Pb = '+pb+' psi','#BBBBBB',qMax),
   ];
-  if (op_nat) traces.push(makePoint(op_nat.q, op_nat.pwf, `OP Natural (${Math.round(op_nat.q)} BPD)`, '#4A7FB5'));
-  if (op_esp) traces.push(makePoint(op_esp.q, op_esp.pwf, `OP w/ ESP (${Math.round(op_esp.q)} BPD)`, '#2E6B3E'));
-  // Pb line
-  traces.push({ x: [0, J*pr], y: [pb, pb], name: `Pb = ${pb} psi`, mode: 'lines', line: { color: '#AAA', width: 1.5, dash: 'dot' }, type: 'scatter' });
+  if(opN)tr.push(pt(opN.q,opN.pwf,'OP Natural','#6B6B6B','circle',9));
+  if(opE)tr.push(pt(opE.q,opE.pwf,`OP w/ ESP (${Math.round(opE.q).toLocaleString()} BPD)`,COLORS.op,'star',13));
 
-  Plotly.react('chart_c1', traces, baseLayout(`Case 1: Undersaturated (P̄r=${pr} psi > Pb=${pb} psi) · APC 538`));
+  Plotly.react('chart_c1',tr,layout(`Case 1: Undersaturated · P̄r=${pr} psi > Pb=${pb} psi`));
 
-  // Update results
-  if (op_esp) {
-    const dd = pr - op_esp.pwf;
-    const head_req_ft = psiToFt(calcVLPNatural(op_esp.q, pwh, depth, grad, fric) - op_esp.pwf, grad) * 0 +
-                        psiToFt(calcVLPNatural(op_esp.q, pwh, depth, grad, fric) - pwh, grad);
-    const head_avail_ft = pumpHead60(op_esp.q/(hz/60)) * (hz/60)**2 * stages;
-    const bep_pct = (op_esp.q / pumpBEP(hz)) * 100;
-    const pb_check = op_esp.pwf >= pb;
-
-    document.getElementById('c1_q').textContent = `${Math.round(op_esp.q).toLocaleString()} STB/d`;
-    document.getElementById('c1_pwf').textContent = `${Math.round(op_esp.pwf).toLocaleString()} psi`;
-    document.getElementById('c1_dd').textContent = `${Math.round(dd).toLocaleString()} psi`;
-    document.getElementById('c1_head').textContent = `${Math.round(head_avail_ft).toLocaleString()} ft`;
-    document.getElementById('c1_head_avail').textContent = `${Math.round(head_avail_ft).toLocaleString()} ft`;
-    document.getElementById('c1_bep_pct').textContent = `${Math.round(bep_pct)}%`;
-    document.getElementById('c1_pb_check').textContent = pb_check ? `✓ Above Pb (${Math.round(op_esp.pwf)} > ${pb})` : `⚠ Below Pb (${Math.round(op_esp.pwf)} < ${pb})`;
-    document.getElementById('c1_pb_check').className = pb_check ? 'result-value good' : 'result-value warn';
-
-    const bepClass = bep_pct >= 70 && bep_pct <= 130 ? 'good' : bep_pct >= 50 ? 'warn' : 'bad';
-    document.getElementById('c1_bep_pct').className = `result-value ${bepClass}`;
-
-    let flag = '';
-    if (!pb_check) flag += `<div class="flag flag-amber"><span class="flag-icon">⚠</span>Pwf drawn below bubble point (${Math.round(op_esp.pwf)} psi < Pb ${pb} psi). Free gas will evolve — this IPR model underestimates inflow. Consider composite IPR (Case 3).</div>`;
-    else flag += `<div class="flag flag-green"><span class="flag-icon">✓</span>Operating above Pb. Linear IPR model is valid. Single-phase liquid inflow confirmed.</div>`;
-    if (bep_pct < 70) flag += `<div class="flag flag-red"><span class="flag-icon">⛔</span>ESP operating below 70% of BEP (${Math.round(bep_pct)}%). Risk of pump recirculation, axial thrust reversal, and shaft failure. Reduce stages or increase frequency.</div>`;
-    else if (bep_pct > 130) flag += `<div class="flag flag-red"><span class="flag-icon">⛔</span>ESP operating above 130% BEP (${Math.round(bep_pct)}%). Overload risk, high radial loads. Add stages or reduce frequency.</div>`;
-    document.getElementById('c1_flag').innerHTML = flag;
+  if(opE){
+    const bepP=(opE.q/pBEP(hz))*100,ha=hStages(opE.q,hz,st);
+    const pbOK=opE.pwf>=pb;
+    document.getElementById('c1_q').textContent=Math.round(opE.q).toLocaleString()+' STB/d';
+    document.getElementById('c1_pwf').textContent=Math.round(opE.pwf).toLocaleString()+' psi';
+    document.getElementById('c1_dd').textContent=Math.round(pr-opE.pwf).toLocaleString()+' psi';
+    document.getElementById('c1_ha').textContent=Math.round(ha).toLocaleString()+' ft';
+    const bp=document.getElementById('c1_bep');bp.textContent=Math.round(bepP)+'% — '+bepLbl(bepP);bp.className='result-value '+bepCls(bepP);
+    const pbEl=document.getElementById('c1_pbck');
+    pbEl.textContent=pbOK?`✓ Above Pb (${Math.round(opE.pwf)} > ${pb} psi)`:`⚠ Below Pb (${Math.round(opE.pwf)} < ${pb} psi)`;
+    pbEl.className='result-value '+(pbOK?'ok':'warn');
+    let fl='';
+    if(!pbOK)fl+=`<div class="flag flag-amber"><span class="flag-icon">⚠</span>Pwf drawn below Pb — free gas will evolve. Linear IPR underestimates inflow. Upgrade to Composite IPR (Case 3).</div>`;
+    else fl+=`<div class="flag flag-green"><span class="flag-icon">✓</span>P<sub>wf</sub> above Pb — linear IPR valid. Single-phase liquid inflow confirmed.</div>`;
+    if(bepP<70)fl+=`<div class="flag flag-red"><span class="flag-icon">⛔</span>ESP below 70% BEP (${Math.round(bepP)}%). Risk of thrust reversal and shaft damage.</div>`;
+    else if(bepP>130)fl+=`<div class="flag flag-red"><span class="flag-icon">⛔</span>ESP above 130% BEP (${Math.round(bepP)}%). Overload risk — reduce stages or frequency.</div>`;
+    document.getElementById('c1_flag').innerHTML=fl;
   }
 
-  // Sensitivity: vary J
-  genSensitivityCase1(pr, pb, pwh, depth, grad, fric, stages, hz);
-}
-
-function genSensitivityCase1(pr, pb, pwh, depth, grad, fric, stages, hz) {
-  const jVals = [J_base()*0.5, J_base()*0.75, J_base(), J_base()*1.5, J_base()*2.0].map(v => +parseFloat(v).toFixed(2));
-  function J_base() { return +document.getElementById('c1_j').value; }
-  const traces = [];
-  const colors = ['#AAA','#C85A00','#2E6B3E','#4A7FB5','#8B1A1A'];
-  jVals.forEach((j, i) => {
-    const qA = [], pA = [];
-    for (let q = 0; q <= j*pr; q += j*pr/100) {
-      const p = iprLinear(q, pr, j);
-      if (p >= 0) { qA.push(q); pA.push(p); }
-    }
-    traces.push(makeScatter(qA, pA, `J=${j}`, colors[i], i===2?'solid':'dash', i===2?2.5:1.5));
+  // J sensitivity
+  const jBase=J,jVals=[jBase*0.5,jBase*0.75,jBase,jBase*1.5,jBase*2];
+  const sColors=['#D4B06A','#B8964A','#4A4A4A','#2E6B3E','#1A3A6A'];
+  const sLabels=['J×0.5','J×0.75','J (base)','J×1.5','J×2.0'];
+  const sTr=jVals.map((j,i)=>{
+    const qa=[],pa=[];
+    for(let q=0;q<=j*pr;q+=j*pr/100){const p=iprLin(q,pr,j);if(p<0)break;qa.push(q);pa.push(p);}
+    return line(qa,pa,sLabels[i],sColors[i],i===2?'solid':'dash',i===2?2.5:1.5);
   });
-  Plotly.react('chart_c1_sens', traces, { ...baseLayout('J Sensitivity'), margin:{l:55,r:10,t:35,b:45}, showlegend:true });
+  Plotly.react('chart_c1_sens',sTr,{...layout('Sensitivity — J Variation on IPR'),margin:{l:55,r:10,t:35,b:45}});
 }
-
-function resetCase1() {
-  document.getElementById('c1_pr').value=3800; document.getElementById('c1_pb').value=1500;
-  document.getElementById('c1_j').value=1.8; document.getElementById('c1_pwh').value=120;
-  document.getElementById('c1_depth').value=6500; document.getElementById('c1_grad').value=0.433;
-  document.getElementById('c1_fric').value=85; document.getElementById('c1_stages').value=80;
-  document.getElementById('c1_hz').value=60; document.getElementById('c1_hz_val').textContent='60 Hz';
+function resetCase1(){
+  ['c1_pr','c1_pb','c1_j','c1_pwh','c1_depth','c1_grad','c1_fric','c1_stages']
+    .forEach((id,i)=>document.getElementById(id).value=[3800,1500,1.8,120,6500,0.433,85,80][i]);
+  document.getElementById('c1_hz').value=60;document.getElementById('c1_hz_v').textContent='60 Hz';
   calcCase1();
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// CASE 2 — SOLUTION GAS DRIVE (VOGEL)
+// CASE 2
 // ═══════════════════════════════════════════════════════════════════
-function calcCase2() {
-  const pr = +document.getElementById('c2_pr').value;
-  const pb = +document.getElementById('c2_pb').value;
-  const qmax = +document.getElementById('c2_qmax').value;
-  const gor  = +document.getElementById('c2_gor').value;
-  const pwh  = +document.getElementById('c2_pwh').value;
-  const depth = +document.getElementById('c2_depth').value;
-  const grad  = +document.getElementById('c2_grad').value;
-  const fric  = +document.getElementById('c2_fric').value;
-  const stages = +document.getElementById('c2_stages').value;
-  const hz = +document.getElementById('c2_hz').value;
-  const sep_eff = +document.getElementById('c2_sep').value / 100;
+function calcCase2(){
+  const pr=+document.getElementById('c2_pr').value,pb=+document.getElementById('c2_pb').value;
+  const qm=+document.getElementById('c2_qmax').value,gor=+document.getElementById('c2_gor').value;
+  const pwh=+document.getElementById('c2_pwh').value,d=+document.getElementById('c2_depth').value;
+  const g=+document.getElementById('c2_grad').value,f=+document.getElementById('c2_fric').value;
+  const st=+document.getElementById('c2_stages').value,hz=+document.getElementById('c2_hz').value;
+  const sep=+document.getElementById('c2_sep').value/100;
 
-  const qArr=[], iprArr=[], vlpNatArr=[], vlpEspArr=[];
-  const step = qmax / 200;
-
-  for (let q = 0; q <= qmax*1.05; q += step) {
-    const pwf_ipr = iprVogel(q, qmax, pr);
-    const pwf_nat = calcVLPNatural(q, pwh, depth, grad, fric);
-    const pwf_esp = calcVLP(q, pwh, depth, grad, fric, stages, hz);
-    qArr.push(q); iprArr.push(pwf_ipr); vlpNatArr.push(pwf_nat); vlpEspArr.push(Math.max(0, pwf_esp));
+  const step=qm/200;const qA=[],iA=[],vNA=[],vEA=[];
+  for(let q=0;q<=qm*1.05;q+=step){
+    qA.push(q);iA.push(Math.max(0,iprVog(q,qm,pr)));
+    vNA.push(vlpNat(q,pwh,d,g,f));
+    vEA.push(Math.max(0,vlpESP(q,pwh,d,g,f,st,hz)));
   }
 
-  const op_nat = findOperatingPoint(q=>iprVogel(q,qmax,pr), q=>calcVLPNatural(q,pwh,depth,grad,fric));
-  const op_esp = findOperatingPoint(q=>iprVogel(q,qmax,pr), q=>calcVLP(q,pwh,depth,grad,fric,stages,hz));
+  const opN=solve(q=>iprVog(q,qm,pr),q=>vlpNat(q,pwh,d,g,f),50,qm);
+  const opE=solve(q=>iprVog(q,qm,pr),q=>vlpESP(q,pwh,d,g,f,st,hz),50,qm);
 
-  const traces = [
-    makeScatter(qArr, iprArr, 'IPR (Vogel — Solution Gas)', '#C85A00', 'solid', 3),
-    makeScatter(qArr, vlpNatArr, 'VLP — Natural Flow', '#4A7FB5', 'dash', 2),
-    makeScatter(qArr, vlpEspArr, `VLP — APC 538 ESP (${hz} Hz, ${stages} stg)`, '#2E6B3E', 'solid', 2.5),
+  const tr=[
+    line(qA,iA,'IPR (Vogel — Solution Gas)',COLORS.ipr,'solid',3),
+    line(qA,vNA,'VLP — Natural Flow',COLORS.vlpNat,'dash',1.5),
+    line(qA,vEA,`VLP — APC 538 (${hz}Hz · ${st}stg)`,COLORS.vlpESP,'solid',2.5),
+    hline(pr,'P̄r = '+pr+' psi','#CCCCCC',qm),
   ];
-  if (op_nat) traces.push(makePoint(op_nat.q, op_nat.pwf, `OP Natural (${Math.round(op_nat.q)} BPD)`, '#4A7FB5'));
-  if (op_esp) traces.push(makePoint(op_esp.q, op_esp.pwf, `OP w/ ESP (${Math.round(op_esp.q)} BPD)`, '#2E6B3E'));
-  traces.push({ x:[0,qmax], y:[pr,pr], name:`P̄r=${pr} psi`, mode:'lines', line:{color:'#999',width:1,dash:'dot'}, type:'scatter' });
+  if(opN)tr.push(pt(opN.q,opN.pwf,'OP Natural','#6B6B6B','circle',9));
+  if(opE)tr.push(pt(opE.q,opE.pwf,`OP w/ ESP (${Math.round(opE.q).toLocaleString()} BPD)`,COLORS.op,'star',13));
 
-  Plotly.react('chart_c2', traces, baseLayout(`Case 2: Solution-Gas Drive (Vogel) · P̄r=${pr} psi · AOF=${qmax.toLocaleString()} BPD`));
+  Plotly.react('chart_c2',tr,layout(`Case 2: Solution-Gas Drive (Vogel) · P̄r=${pr} psi · AOF=${qm.toLocaleString()} BPD`));
 
-  // Results
-  if (op_esp) {
-    const bep_pct = (op_esp.q / pumpBEP(hz)) * 100;
-    const aof_pct = (op_esp.q / qmax) * 100;
-    const head_avail_ft = pumpHead60(op_esp.q/(hz/60)) * (hz/60)**2 * stages;
-
-    // Gas at pump: free gas fraction = GOR effect
-    const pwf_at_op = op_esp.pwf;
-    const gas_flag = pwf_at_op < pr ? 'Free gas present at pump intake' : 'No free gas (above Pb)';
-    const gas_vol_pct = Math.min(60, (1 - pwf_at_op/pr) * gor / 10).toFixed(1);
-
-    document.getElementById('c2_q').textContent = `${Math.round(op_esp.q).toLocaleString()} STB/d`;
-    document.getElementById('c2_pwf').textContent = `${Math.round(op_esp.pwf).toLocaleString()} psi`;
-    document.getElementById('c2_aof_pct').textContent = `${Math.round(aof_pct)}%`;
-    document.getElementById('c2_gas').textContent = `~${gas_vol_pct}% vol (est.)`;
-    document.getElementById('c2_bep_pct').textContent = `${Math.round(bep_pct)}%`;
-    document.getElementById('c2_head_avail').textContent = `${Math.round(head_avail_ft).toLocaleString()} ft`;
-
-    const bepClass = bep_pct>=70&&bep_pct<=130?'good':bep_pct>=50?'warn':'bad';
-    document.getElementById('c2_bep_pct').className = `result-value ${bepClass}`;
-
-    let flag = '';
-    if (+gas_vol_pct > 10 && sep_eff < 0.8) flag += `<div class="flag flag-red"><span class="flag-icon">⛔</span>Estimated free gas at pump intake: ${gas_vol_pct}% volume. With ${Math.round(sep_eff*100)}% separator efficiency, residual gas may cause pump cavitation/gas-locking. Consider natural separator, AGH, or rotating gas separator.</div>`;
-    else if (+gas_vol_pct > 5) flag += `<div class="flag flag-amber"><span class="flag-icon">⚠</span>Moderate free gas (${gas_vol_pct}% vol). Monitor GOR trend. Ensure pump is gas-tolerant or includes gas-handling stage.</div>`;
-    else flag += `<div class="flag flag-green"><span class="flag-icon">✓</span>Gas-at-pump within acceptable range. Monitor for GOR increase over field life.</div>`;
-    document.getElementById('c2_flag').innerHTML = flag;
+  if(opE){
+    const bepP=(opE.q/pBEP(hz))*100,ha=hStages(opE.q,hz,st);
+    const aofP=(opE.q/qm)*100;
+    const gasVol=Math.min(65,(1-opE.pwf/pr)*gor/10).toFixed(1);
+    document.getElementById('c2_q').textContent=Math.round(opE.q).toLocaleString()+' STB/d';
+    document.getElementById('c2_pwf').textContent=Math.round(opE.pwf).toLocaleString()+' psi';
+    document.getElementById('c2_aof').textContent=Math.round(aofP)+'%';
+    document.getElementById('c2_gas').textContent='~'+gasVol+'% vol';
+    const bpEl=document.getElementById('c2_bep');bpEl.textContent=Math.round(bepP)+'% — '+bepLbl(bepP);bpEl.className='result-value '+bepCls(bepP);
+    document.getElementById('c2_ha').textContent=Math.round(ha).toLocaleString()+' ft';
+    let fl='';
+    if(+gasVol>10&&sep<0.8)fl+=`<div class="flag flag-red"><span class="flag-icon">⛔</span>Gas at pump ~${gasVol}% vol with ${Math.round(sep*100)}% separator efficiency. High gas-locking risk. Consider AGH or rotating gas separator.</div>`;
+    else if(+gasVol>5)fl+=`<div class="flag flag-amber"><span class="flag-icon">⚠</span>Moderate free gas at pump (~${gasVol}% vol). Monitor GOR trend. Use gas-tolerant stages.</div>`;
+    else fl+=`<div class="flag flag-green"><span class="flag-icon">✓</span>Gas-at-pump within acceptable limits. Continue monitoring GOR.</div>`;
+    document.getElementById('c2_flag').innerHTML=fl;
   }
 
-  // Pr decline sensitivity
-  genSensCase2(qmax, pwh, depth, grad, fric, stages, hz);
-}
-
-function genSensCase2(qmax, pwh, depth, grad, fric, stages, hz) {
-  const pr_vals = [+document.getElementById('c2_pr').value * 1.2,
-                   +document.getElementById('c2_pr').value,
-                   +document.getElementById('c2_pr').value * 0.8,
-                   +document.getElementById('c2_pr').value * 0.6];
-  const colors = ['#2E6B3E','#C85A00','#E07820','#8B1A1A'];
-  const labels = ['+20% Pr','Current Pr','-20% Pr','-40% Pr'];
-  const traces = [];
-  pr_vals.forEach((pr, i) => {
-    const qm = qmax * (pr / +document.getElementById('c2_pr').value);
-    const qA=[], pA=[];
-    for (let q=0; q<=qm; q+=qm/100) { qA.push(q); pA.push(iprVogel(q,qm,pr)); }
-    traces.push(makeScatter(qA, pA, labels[i], colors[i], i===1?'solid':'dash', i===1?2.5:1.5));
+  // Pr depletion sensitivity
+  const prVals=[pr*1.2,pr,pr*0.8,pr*0.6];
+  const pLabels=['+20% Pr','Current','−20% Pr','−40% Pr'];
+  const pColors=['#2E6B3E',COLORS.ipr,'#D4B06A','#8B1A1A'];
+  const sTr=prVals.map((p,i)=>{
+    const qmx=qm*(p/pr),qa=[],pa=[];
+    for(let q=0;q<=qmx;q+=qmx/100){qa.push(q);pa.push(iprVog(q,qmx,p));}
+    return line(qa,pa,pLabels[i],pColors[i],i===1?'solid':'dash',i===1?2.5:1.5);
   });
-  Plotly.react('chart_c2_sens', traces, { ...baseLayout('P̄r Decline — IPR Shift'), margin:{l:55,r:10,t:35,b:45} });
+  Plotly.react('chart_c2_sens',sTr,{...layout('P̄r Depletion — IPR Shift'),margin:{l:55,r:10,t:35,b:45}});
 }
-
-function resetCase2() {
-  document.getElementById('c2_pr').value=2200; document.getElementById('c2_pb').value=2800;
-  document.getElementById('c2_qmax').value=6500; document.getElementById('c2_gor').value=450;
-  document.getElementById('c2_pwh').value=150; document.getElementById('c2_depth').value=7200;
-  document.getElementById('c2_grad').value=0.365; document.getElementById('c2_fric').value=90;
-  document.getElementById('c2_stages').value=100; document.getElementById('c2_hz').value=60;
-  document.getElementById('c2_hz_val').textContent='60 Hz';
-  document.getElementById('c2_sep').value=70; document.getElementById('c2_sep_val').textContent='70%';
+function resetCase2(){
+  ['c2_pr','c2_pb','c2_qmax','c2_gor','c2_pwh','c2_depth','c2_grad','c2_fric','c2_stages']
+    .forEach((id,i)=>document.getElementById(id).value=[2200,2800,6500,450,150,7200,0.365,90,100][i]);
+  document.getElementById('c2_hz').value=60;document.getElementById('c2_hz_v').textContent='60 Hz';
+  document.getElementById('c2_sep').value=70;document.getElementById('c2_sep_v').textContent='70%';
   calcCase2();
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// CASE 3 — COMPOSITE + ESP + VFD
+// CASE 3
 // ═══════════════════════════════════════════════════════════════════
-function calcCase3() {
-  const pr = +document.getElementById('c3_pr').value;
-  const pb = +document.getElementById('c3_pb').value;
-  const J  = +document.getElementById('c3_j').value;
-  const pwh = +document.getElementById('c3_pwh').value;
-  const depth = +document.getElementById('c3_depth').value;
-  const grad  = +document.getElementById('c3_grad').value;
-  const fric  = +document.getElementById('c3_fric').value;
-  const stages = +document.getElementById('c3_stages').value;
-  const hz = +document.getElementById('c3_hz').value;
+function calcCase3(){
+  const pr=+document.getElementById('c3_pr').value,pb=+document.getElementById('c3_pb').value;
+  const J=+document.getElementById('c3_j').value,pwh=+document.getElementById('c3_pwh').value;
+  const d=+document.getElementById('c3_depth').value,g=+document.getElementById('c3_grad').value;
+  const f=+document.getElementById('c3_fric').value,st=+document.getElementById('c3_stages').value;
+  const hz=+document.getElementById('c3_hz').value;
+  const qb=J*(pr-pb),qmb=qb+(J*pb/1.8),qTot=qmb;
+  const step=qTot/200;
 
-  const qb = J * (pr - pb);
-  const qmax_below = qb + (J * pb / 1.8);
-  const qTotal = qmax_below;
-
-  const qArr=[], iprArr=[], vlpNatArr=[], vlpEspArr=[], iprAboveArr=[], iprBelowArr=[];
-  const step = qTotal / 200;
-
-  for (let q = 0; q <= qTotal*1.05; q += step) {
-    const pwf_ipr = iprComposite(q, pr, pb, J);
-    const pwf_nat = calcVLPNatural(q, pwh, depth, grad, fric);
-    const pwf_esp = calcVLP(q, pwh, depth, grad, fric, stages, hz);
-    qArr.push(q); iprArr.push(Math.max(0, pwf_ipr)); vlpNatArr.push(pwf_nat); vlpEspArr.push(Math.max(0, pwf_esp));
-    if (q <= qb) { iprAboveArr.push(Math.max(0,pwf_ipr)); iprBelowArr.push(null); }
-    else { iprAboveArr.push(null); iprBelowArr.push(Math.max(0,pwf_ipr)); }
+  const qA=[],iAbA=[],iBwA=[],vNA=[],vEA=[];
+  for(let q=0;q<=qTot*1.05;q+=step){
+    const pi=iprComp(q,pr,pb,J);
+    qA.push(q);
+    iAbA.push(q<=qb?Math.max(0,pi):null);
+    iBwA.push(q>qb?Math.max(0,pi):null);
+    vNA.push(vlpNat(q,pwh,d,g,f));
+    vEA.push(Math.max(0,vlpESP(q,pwh,d,g,f,st,hz)));
   }
 
-  const op_nat = findOperatingPoint(q=>iprComposite(q,pr,pb,J), q=>calcVLPNatural(q,pwh,depth,grad,fric), 50, qTotal);
-  const op_esp = findOperatingPoint(q=>iprComposite(q,pr,pb,J), q=>calcVLP(q,pwh,depth,grad,fric,stages,hz), 50, qTotal);
+  const freqs=[45,50,55,60,65,70];
+  const opN=solve(q=>iprComp(q,pr,pb,J),q=>vlpNat(q,pwh,d,g,f),50,qTot);
+  const opE=solve(q=>iprComp(q,pr,pb,J),q=>vlpESP(q,pwh,d,g,f,st,hz),50,qTot);
 
-  // VFD envelope: 45,50,55,60,65,70 Hz
-  const freqs = [45,50,55,60,65,70];
-  const freqColors = ['#D4B896','#E07820','#C85A00','#2E6B3E','#4A7FB5','#4A2060'];
-
-  const traces = [
-    { x:qArr, y:iprAboveArr, name:'IPR (Linear — above Pb)', mode:'lines', line:{color:'#C85A00',width:3}, connectgaps:false, type:'scatter' },
-    { x:qArr, y:iprBelowArr, name:'IPR (Vogel — below Pb)', mode:'lines', line:{color:'#C85A00',width:3,dash:'dot'}, connectgaps:false, type:'scatter' },
-    makeScatter(qArr, vlpNatArr, 'VLP — Natural Flow', '#999', 'dash', 1.5),
+  const tr=[
+    {x:qA,y:iAbA,name:'IPR (Linear — above Pb)',mode:'lines',line:{color:COLORS.ipr,width:3},connectgaps:false,type:'scatter'},
+    {x:qA,y:iBwA,name:'IPR (Vogel — below Pb)',mode:'lines',line:{color:COLORS.ipr,width:3,dash:'dot'},connectgaps:false,type:'scatter'},
+    line(qA,vNA,'VLP — Natural Flow','#AAAAAA','dash',1.5),
   ];
 
-  freqs.forEach((f, i) => {
-    const vlpArr = qArr.map(q => Math.max(0, calcVLP(q, pwh, depth, grad, fric, stages, f)));
-    traces.push(makeScatter(qArr, vlpArr, `VLP — ${f} Hz`, freqColors[i], f===hz?'solid':'dot', f===hz?2.5:1));
+  freqs.forEach((fq,i)=>{
+    const va=qA.map(q=>Math.max(0,vlpESP(q,pwh,d,g,f,st,fq)));
+    tr.push(line(qA,va,`VLP ${fq}Hz`,COLORS.freq[i],fq===hz?'solid':'dot',fq===hz?2.5:1));
   });
 
-  if (op_nat) traces.push(makePoint(op_nat.q, op_nat.pwf, `OP Natural`, '#999'));
-  if (op_esp) traces.push(makePoint(op_esp.q, op_esp.pwf, `OP @ ${hz}Hz (${Math.round(op_esp.q).toLocaleString()} BPD)`, '#2E6B3E'));
-  traces.push({ x:[0,qTotal], y:[pb,pb], name:`Pb = ${pb} psi`, mode:'lines', line:{color:'#AAA',width:1,dash:'dot'}, type:'scatter' });
-  traces.push({ x:[0,qTotal], y:[pr,pr], name:`P̄r = ${pr} psi`, mode:'lines', line:{color:'#DDD',width:1,dash:'dot'}, type:'scatter' });
+  if(opN)tr.push(pt(opN.q,opN.pwf,'OP Natural','#AAAAAA','circle',8));
+  if(opE)tr.push(pt(opE.q,opE.pwf,`OP @ ${hz}Hz (${Math.round(opE.q).toLocaleString()} BPD)`,COLORS.op,'star',14));
+  tr.push(hline(pb,'Pb = '+pb+' psi','#CCCCCC',qTot));
+  tr.push(hline(pr,'P̄r = '+pr+' psi','#EEEEEE',qTot));
 
-  Plotly.react('chart_c3', traces, baseLayout(`Case 3: Composite IPR + APC 538 ESP · ${stages} Stages · VFD ${hz} Hz`));
+  Plotly.react('chart_c3',tr,layout(`Case 3: Composite IPR · APC 538 · ${st} Stages · VFD ${hz}Hz`));
 
-  // Pump curves at multiple frequencies
-  const pumpTraces = [];
-  freqs.forEach((f, i) => {
-    const pQ=[], pH=[];
-    for (let q=0; q<=pumpQmax(f)*1.1; q+=100) {
-      const h = pumpHead60(q/(f/60)) * (f/60)**2 * stages;
-      pQ.push(q); pH.push(Math.max(0,h));
-    }
-    pumpTraces.push({ x:pQ, y:pH, name:`${f} Hz`, mode:'lines', line:{color:freqColors[i], width:f===hz?3:1.5, dash:f===hz?'solid':'dot'}, type:'scatter',
-      hovertemplate:`<b>${f}Hz</b><br>q=%{x:.0f} BPD<br>H=%{y:.0f} ft<extra></extra>` });
-    // BEP marker
-    const bep = pumpBEP(f);
-    const hBep = pumpHead60(bep/(f/60)) * (f/60)**2 * stages;
-    pumpTraces.push({ x:[bep], y:[hBep], mode:'markers', showlegend:false,
-      marker:{color:freqColors[i], size:8, symbol:'circle'}, type:'scatter',
-      hovertemplate:`BEP ${f}Hz<br>q=${Math.round(bep)} BPD<br>H=${Math.round(hBep)} ft<extra></extra>` });
-  });
-  Plotly.react('chart_c3_pump', pumpTraces, {
-    ...baseLayout(`APC 538 · ${stages} Stages · Head Curve at 45–70 Hz`, 'Flow Rate (BPD)', 'Total Head (ft)'),
-    margin:{l:60,r:10,t:40,b:50}
-  });
+  // Pump curves
+  const pTr=freqs.map((fq,i)=>{
+    const qa=[],ha=[];
+    for(let q=0;q<=pQmax(fq)*1.1;q+=100){qa.push(q);ha.push(Math.max(0,hStages(q,fq,st)));}
+    const bep=pBEP(fq),hbep=hStages(bep,fq,st);
+    return[
+      {...line(qa,ha,`${fq}Hz`,COLORS.freq[i],fq===hz?'solid':'dot',fq===hz?3:1.5),
+       hovertemplate:`<b>${fq}Hz</b><br>q=%{x:.0f} BPD<br>H=%{y:.0f} ft<extra></extra>`},
+      {x:[bep],y:[hbep],mode:'markers',showlegend:false,marker:{color:COLORS.freq[i],size:7,symbol:'circle'},type:'scatter',
+       hovertemplate:`BEP ${fq}Hz<br>${Math.round(bep)} BPD<br>${Math.round(hbep)} ft<extra></extra>`}
+    ];
+  }).flat();
+  Plotly.react('chart_c3_pump',pTr,{...layout(`APC 538 · ${st} Stages · Head vs Flow @ 45–70Hz`,'Flow Rate (BPD)','Total Head (ft)'),margin:{l:60,r:10,t:38,b:48}});
 
   // Results
-  if (op_esp) {
-    const bep_pct = (op_esp.q / pumpBEP(hz)) * 100;
-    const head_ft = pumpHead60(op_esp.q/(hz/60)) * (hz/60)**2 * stages;
-    const region = op_esp.pwf >= pb ? 'Linear (above Pb)' : 'Vogel (below Pb)';
-    document.getElementById('c3_q').textContent = `${Math.round(op_esp.q).toLocaleString()} STB/d`;
-    document.getElementById('c3_pwf').textContent = `${Math.round(op_esp.pwf).toLocaleString()} psi`;
-    document.getElementById('c3_region').textContent = region;
-    document.getElementById('c3_qb').textContent = `${Math.round(qb).toLocaleString()} STB/d`;
-    document.getElementById('c3_head_avail').textContent = `${Math.round(head_ft).toLocaleString()} ft`;
-    document.getElementById('c3_bep_pct').textContent = `${Math.round(bep_pct)}%`;
-    document.getElementById('c3_bep_pct').className = `result-value ${bep_pct>=70&&bep_pct<=130?'good':bep_pct>=50?'warn':'bad'}`;
-
-    let flag = '';
-    if (op_esp.pwf < pb) flag += `<div class="flag flag-blue"><span class="flag-icon">ℹ</span>Operating point is below bubble point (Pwf=${Math.round(op_esp.pwf)} < Pb=${pb} psi). Composite Vogel region active. GOR at pump intake elevated — gas handling critical.</div>`;
-    else flag += `<div class="flag flag-green"><span class="flag-icon">✓</span>Operating in linear IPR region above bubble point. Clean single-phase liquid inflow to pump.</div>`;
-    document.getElementById('c3_flag').innerHTML = flag;
+  if(opE){
+    const bepP=(opE.q/pBEP(hz))*100,ha=hStages(opE.q,hz,st);
+    const reg=opE.pwf>=pb?'Linear (above Pb)':'Vogel (below Pb)';
+    document.getElementById('c3_q').textContent=Math.round(opE.q).toLocaleString()+' STB/d';
+    document.getElementById('c3_pwf').textContent=Math.round(opE.pwf).toLocaleString()+' psi';
+    document.getElementById('c3_reg').textContent=reg;
+    document.getElementById('c3_qb').textContent=Math.round(qb).toLocaleString()+' STB/d';
+    document.getElementById('c3_ha').textContent=Math.round(ha).toLocaleString()+' ft';
+    const bpEl=document.getElementById('c3_bep');bpEl.textContent=Math.round(bepP)+'% — '+bepLbl(bepP);bpEl.className='result-value '+bepCls(bepP);
+    const fl=opE.pwf<pb
+      ?`<div class="flag flag-blue"><span class="flag-icon">ℹ</span>Operating below Pb — composite Vogel region active. Monitor GOR and gas separator performance.</div>`
+      :`<div class="flag flag-green"><span class="flag-icon">✓</span>Operating in linear IPR region above Pb — clean liquid inflow to pump.</div>`;
+    document.getElementById('c3_flag').innerHTML=fl;
   }
 
-  // Frequency sensitivity table
-  const tbody = document.getElementById('c3_freq_tbody');
-  tbody.innerHTML = '';
-  freqs.forEach(f => {
-    const op = findOperatingPoint(q=>iprComposite(q,pr,pb,J), q=>calcVLP(q,pwh,depth,grad,fric,stages,f), 50, qTotal);
-    if (op) {
-      const bep = (op.q / pumpBEP(f)) * 100;
-      const h = pumpHead60(op.q/(f/60)) * (f/60)**2 * stages;
-      const status = bep>=70&&bep<=130 ? '✅ OK' : bep<70 ? '⚠ Low' : '⚠ High';
-      const bg = f===hz ? 'background:#FFF8E6;font-weight:700;' : '';
-      tbody.innerHTML += `<tr style="${bg}"><td>${f} Hz</td><td>${Math.round(op.q).toLocaleString()}</td><td>${Math.round(op.pwf).toLocaleString()}</td><td>${Math.round(h).toLocaleString()}</td><td>${Math.round(bep)}%</td><td>${status}</td></tr>`;
-    }
+  // Frequency table
+  const tb=document.getElementById('c3_freq_tbody');tb.innerHTML='';
+  freqs.forEach(fq=>{
+    const op=solve(q=>iprComp(q,pr,pb,J),q=>vlpESP(q,pwh,d,g,f,st,fq),50,qTot);
+    if(!op)return;
+    const bepP=(op.q/pBEP(fq))*100,h=hStages(op.q,fq,st);
+    const cls=fq===hz?'highlight':'';
+    const status=bepP>=70&&bepP<=130?'✅ OK':bepP<70?'⚠ Low':'⚠ High';
+    tb.innerHTML+=`<tr class="${cls}"><td>${fq}</td><td>${Math.round(op.q).toLocaleString()}</td><td>${Math.round(op.pwf).toLocaleString()}</td><td>${Math.round(h).toLocaleString()}</td><td>${Math.round(bepP)}%</td><td>${status}</td></tr>`;
   });
 }
-
-function resetCase3() {
-  document.getElementById('c3_pr').value=3500; document.getElementById('c3_pb').value=2400;
-  document.getElementById('c3_j').value=2.2; document.getElementById('c3_gor').value=320;
-  document.getElementById('c3_pwh').value=100; document.getElementById('c3_depth').value=7800;
-  document.getElementById('c3_grad').value=0.41; document.getElementById('c3_fric').value=80;
-  document.getElementById('c3_stages').value=90; document.getElementById('c3_hz').value=60;
-  document.getElementById('c3_hz_val').textContent='60 Hz';
+function resetCase3(){
+  ['c3_pr','c3_pb','c3_j','c3_gor','c3_pwh','c3_depth','c3_grad','c3_fric','c3_stages']
+    .forEach((id,i)=>document.getElementById(id).value=[3500,2400,2.2,320,100,7800,0.41,80,90][i]);
+  document.getElementById('c3_hz').value=60;document.getElementById('c3_hz_v').textContent='60 Hz';
   calcCase3();
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// TAB 5 — FROM PRODUCTION DATA
+// TAB 5 — FROM DATA
 // ═══════════════════════════════════════════════════════════════════
-let testPoints = [
-  { q: 1200, pwf: 2800 },
-  { q: 2800, pwf: 1900 },
-  { q: 4500, pwf: 900 },
-];
+let tps=[{q:1200,pwf:2800},{q:2800,pwf:1900},{q:4500,pwf:900}];
 
-function renderTestPoints() {
-  const cont = document.getElementById('test_points_container');
-  cont.innerHTML = '';
-  testPoints.forEach((pt, i) => {
-    cont.innerHTML += `
-      <div class="test-point-row">
-        <div class="pt-label">T${i+1}</div>
-        <input type="number" value="${pt.q}" placeholder="e.g. 2000" onchange="testPoints[${i}].q=+this.value;fitIPR()">
-        <input type="number" value="${pt.pwf}" placeholder="e.g. 2500" onchange="testPoints[${i}].pwf=+this.value;fitIPR()">
-        <button class="pt-remove" onclick="removePoint(${i})">✕</button>
-      </div>`;
+function renderTP(){
+  const c=document.getElementById('tp_container');c.innerHTML='';
+  tps.forEach((p,i)=>{
+    c.innerHTML+=`<div class="tp-row">
+      <div class="tp-num">${i+1}</div>
+      <input class="tp-input" type="number" value="${p.q}" placeholder="q (STB/d)" onchange="tps[${i}].q=+this.value;fitIPR()">
+      <input class="tp-input" type="number" value="${p.pwf}" placeholder="Pwf (psi)" onchange="tps[${i}].pwf=+this.value;fitIPR()">
+      <button class="tp-del" onclick="delTP(${i})">✕</button>
+    </div>`;
   });
 }
+function addTP(){tps.push({q:0,pwf:0});renderTP();}
+function delTP(i){if(tps.length<=2)return;tps.splice(i,1);renderTP();fitIPR();}
 
-function addTestPoint() {
-  testPoints.push({ q: 0, pwf: 0 });
-  renderTestPoints();
+function linspace(a,b,n){return Array.from({length:n},(_,i)=>a+(b-a)*i/(n-1));}
+
+function fitLinear(pts,prH){
+  let bJ,bPr,bR=-Infinity;
+  const prR=prH?[prH]:linspace(pts[pts.length-1].pwf*1.05,pts[pts.length-1].pwf*2.8,60);
+  for(const pr of prR){
+    if(pr<=pts[pts.length-1].pwf)continue;
+    let num=0,den=0;
+    pts.forEach(p=>{const dd=pr-p.pwf;num+=p.q*dd;den+=dd*dd;});
+    const J=num/den;if(J<=0)continue;
+    const mq=pts.reduce((s,p)=>s+p.q,0)/pts.length;
+    let sr=0,st=0;
+    pts.forEach(p=>{const qp=J*(pr-p.pwf);sr+=(p.q-qp)**2;st+=(p.q-mq)**2;});
+    const r2=1-sr/st;
+    if(r2>bR){bR=r2;bJ=J;bPr=pr;}
+  }
+  return{J:bJ||1,pr:bPr||pts[pts.length-1].pwf*1.6,r2:Math.max(0,bR)};
 }
 
-function removePoint(i) {
-  if (testPoints.length <= 2) { alert('Minimum 2 test points required.'); return; }
-  testPoints.splice(i, 1);
-  renderTestPoints();
-  fitIPR();
-}
-
-function updateDataTab() {
-  const esp = document.getElementById('td_use_esp').value === 'yes';
-  document.getElementById('td_esp_panel').style.display = esp ? 'block' : 'none';
-  fitIPR();
-}
-
-function fitIPR() {
-  const pts = testPoints.filter(p => p.q > 0 && p.pwf > 0).sort((a,b)=>a.q-b.q);
-  if (pts.length < 2) return;
-
-  const model_sel = document.getElementById('td_model').value;
-  const pr_hint = +document.getElementById('td_pr_hint').value || null;
-  const pb_hint = +document.getElementById('td_pb').value || null;
-  const pwh = +document.getElementById('td_pwh').value || 120;
-  const depth = +document.getElementById('td_depth').value || 7000;
-  const grad = +document.getElementById('td_grad').value || 0.42;
-  const fric = +document.getElementById('td_fric').value || 85;
-  const use_esp = document.getElementById('td_use_esp').value === 'yes';
-  const stages = use_esp ? +document.getElementById('td_stages').value : 0;
-  const hz = use_esp ? +document.getElementById('td_hz').value : 60;
-
-  let model, pr_est, J_est, qmax_est, r2;
-
-  // Auto-detect: if max Pwf ≈ Pr (intercept) — check linearity
-  const pr_from_linear = estimatePrLinear(pts);
-  const pr_from_vogel  = estimatePrVogel(pts);
-
-  if (model_sel === 'linear' || (model_sel === 'auto' && pb_hint === null)) {
-    // Linear fit
-    const result = fitLinear(pts, pr_hint);
-    model = 'Linear (Darcy)'; pr_est = result.pr; J_est = result.J; qmax_est = result.J * result.pr; r2 = result.r2;
-  } else if (model_sel === 'vogel') {
-    const result = fitVogel(pts, pr_hint);
-    model = 'Vogel'; pr_est = result.pr; qmax_est = result.qmax; J_est = qmax_est / pr_est * 1.8; r2 = result.r2;
-  } else {
-    // Auto or composite — try linear first for quality
-    const lin = fitLinear(pts, pr_hint);
-    const vog = fitVogel(pts, pr_hint);
-    if (lin.r2 >= vog.r2 && lin.r2 > 0.92) {
-      model = 'Linear (Darcy) — auto'; pr_est = lin.pr; J_est = lin.J; qmax_est = lin.J * lin.pr; r2 = lin.r2;
-    } else {
-      model = 'Vogel — auto'; pr_est = vog.pr; qmax_est = vog.qmax; J_est = qmax_est / pr_est * 1.8; r2 = vog.r2;
+function fitVogel(pts,prH){
+  let bQm,bPr,bR=-Infinity;
+  const prR=prH?[prH]:linspace(pts[pts.length-1].pwf*1.05,pts[pts.length-1].pwf*3,50);
+  for(const pr of prR){
+    if(pr<=pts[pts.length-1].pwf)continue;
+    for(const qm of linspace(pts[pts.length-1].q*1.1,pts[pts.length-1].q*4,50)){
+      const mq=pts.reduce((s,p)=>s+p.q,0)/pts.length;
+      let sr=0,st=0;
+      pts.forEach(p=>{const x=p.pwf/pr,qp=qm*(1-0.2*x-0.8*x*x);sr+=(p.q-qp)**2;st+=(p.q-mq)**2;});
+      const r2=1-sr/st;
+      if(r2>bR){bR=r2;bQm=qm;bPr=pr;}
     }
   }
+  return{qmax:bQm||pts[pts.length-1].q*2,pr:bPr||pts[pts.length-1].pwf*1.5,r2:Math.max(0,bR)};
+}
 
-  // Generate IPR curve
-  const qArr=[], iprArr=[], vlpArr=[];
-  const qmax_plot = qmax_est * 1.05;
-  const step = qmax_plot / 200;
-  for (let q=0; q<=qmax_plot; q+=step) {
-    let pwf_ipr;
-    if (model.includes('Vogel')) pwf_ipr = iprVogel(q, qmax_est, pr_est);
-    else pwf_ipr = iprLinear(q, pr_est, J_est);
-    qArr.push(q); iprArr.push(Math.max(0, pwf_ipr));
+function fitIPR(){
+  const pts=tps.filter(p=>p.q>0&&p.pwf>0).sort((a,b)=>a.q-b.q);
+  if(pts.length<2)return;
+  const mSel=document.getElementById('td_model').value;
+  const prH=+document.getElementById('td_pr_hint').value||null;
+  const pwh=+document.getElementById('td_pwh').value||120;
+  const d=+document.getElementById('td_depth').value||7000;
+  const g=+document.getElementById('td_grad').value||0.42;
+  const f=+document.getElementById('td_fric').value||85;
+  const useESP=document.getElementById('td_esp').value==='yes';
+  const st=useESP?+document.getElementById('td_stages').value:0;
+  const hz=useESP?+document.getElementById('td_hz').value:60;
 
-    let pwf_vlp;
-    if (use_esp) pwf_vlp = calcVLP(q, pwh, depth, grad, fric, stages, hz);
-    else pwf_vlp = calcVLPNatural(q, pwh, depth, grad, fric);
-    vlpArr.push(Math.max(0, pwf_vlp));
+  let model,pr_e,J_e,qm_e,r2;
+  if(mSel==='linear'){const r=fitLinear(pts,prH);model='Linear (Darcy)';pr_e=r.pr;J_e=r.J;qm_e=J_e*pr_e;r2=r.r2;}
+  else if(mSel==='vogel'){const r=fitVogel(pts,prH);model='Vogel';pr_e=r.pr;qm_e=r.qmax;J_e=qm_e/pr_e*1.8;r2=r.r2;}
+  else{
+    const rl=fitLinear(pts,prH),rv=fitVogel(pts,prH);
+    if(rl.r2>=rv.r2){model='Linear (auto)';pr_e=rl.pr;J_e=rl.J;qm_e=J_e*pr_e;r2=rl.r2;}
+    else{model='Vogel (auto)';pr_e=rv.pr;qm_e=rv.qmax;J_e=qm_e/pr_e*1.8;r2=rv.r2;}
   }
 
-  // Operating point
-  const iprFn = model.includes('Vogel')
-    ? q => iprVogel(q, qmax_est, pr_est)
-    : q => iprLinear(q, pr_est, J_est);
-  const vlpFn = use_esp
-    ? q => calcVLP(q, pwh, depth, grad, fric, stages, hz)
-    : q => calcVLPNatural(q, pwh, depth, grad, fric);
-  const op = findOperatingPoint(iprFn, vlpFn, 50, qmax_est);
+  const iF=model.includes('Vogel')?q=>iprVog(q,qm_e,pr_e):q=>iprLin(q,pr_e,J_e);
+  const vF=useESP?q=>vlpESP(q,pwh,d,g,f,st,hz):q=>vlpNat(q,pwh,d,g,f);
+  const op=solve(iF,vF,50,qm_e);
 
-  // Plot
-  const traces = [
-    makeScatter(qArr, iprArr, `Fitted IPR (${model})`, '#C85A00', 'solid', 3),
-    makeScatter(qArr, vlpArr, use_esp ? `VLP + APC 538 (${hz}Hz, ${stages}stg)` : 'VLP (Natural)', '#2E6B3E', 'solid', 2.5),
-    { x: pts.map(p=>p.q), y: pts.map(p=>p.pwf), name: 'Test Points', mode: 'markers',
-      marker: { color: '#8B1A1A', size: 10, symbol: 'diamond' }, type: 'scatter',
-      hovertemplate: 'Test: q=%{x:.0f} BPD<br>Pwf=%{y:.0f} psi<extra></extra>' }
+  const step=qm_e/200;const qA=[],iA=[],vA=[];
+  for(let q=0;q<=qm_e*1.05;q+=step){qA.push(q);iA.push(Math.max(0,iF(q)));vA.push(Math.max(0,vF(q)));}
+
+  const tr=[
+    line(qA,iA,`Fitted IPR (${model})`,COLORS.ipr,'solid',3),
+    line(qA,vA,useESP?`VLP + APC 538 (${hz}Hz · ${st}stg)`:'VLP (Natural)',COLORS.vlpESP,'solid',2.5),
+    {x:pts.map(p=>p.q),y:pts.map(p=>p.pwf),name:'Test Points',mode:'markers',
+     marker:{color:COLORS.op,size:11,symbol:'diamond',line:{color:'#fff',width:1.5}},type:'scatter',
+     hovertemplate:'T%{pointIndex+1}: q=%{x:.0f} BPD<br>Pwf=%{y:.0f} psi<extra></extra>'}
   ];
-  if (op) traces.push(makePoint(op.q, op.pwf, `Operating Point (${Math.round(op.q).toLocaleString()} BPD)`, '#4A2060'));
+  if(op)tr.push(pt(op.q,op.pwf,`OP (${Math.round(op.q).toLocaleString()} BPD)`,'#4A2060','star',13));
 
-  Plotly.react('chart_td', traces, baseLayout(`From Test Data — Fitted ${model} IPR`));
+  Plotly.react('chart_td',tr,layout(`From Test Data — ${model} Fit`));
 
-  // Update results
-  document.getElementById('td_results').style.display = 'block';
-  document.getElementById('td_table_card').style.display = 'block';
-  document.getElementById('td_model_used').textContent = model;
-  document.getElementById('td_pr_est').textContent = `${Math.round(pr_est).toLocaleString()} psi`;
-  document.getElementById('td_j_est').textContent = `${J_est.toFixed(2)} STB/d/psi`;
-  document.getElementById('td_qmax_est').textContent = `${Math.round(qmax_est).toLocaleString()} STB/d`;
-  document.getElementById('td_r2').textContent = r2.toFixed(4);
-  document.getElementById('td_r2').className = `result-value ${r2>0.99?'good':r2>0.95?'warn':'bad'}`;
-  if (op) {
-    document.getElementById('td_q').textContent = `${Math.round(op.q).toLocaleString()} STB/d`;
-    document.getElementById('td_pwf').textContent = `${Math.round(op.pwf).toLocaleString()} psi`;
-  }
+  // Results
+  document.getElementById('td_res').style.display='block';
+  document.getElementById('td_mod').textContent=model;
+  document.getElementById('td_pr').textContent=Math.round(pr_e).toLocaleString()+' psi';
+  document.getElementById('td_j').textContent=J_e.toFixed(3)+' STB/d/psi';
+  document.getElementById('td_qm').textContent=Math.round(qm_e).toLocaleString()+' STB/d';
+  const r2El=document.getElementById('td_r2');r2El.textContent=r2.toFixed(4);r2El.className='result-value '+(r2>0.99?'ok':r2>0.95?'warn':'bad');
+  if(op){document.getElementById('td_q').textContent=Math.round(op.q).toLocaleString()+' STB/d';document.getElementById('td_pwf').textContent=Math.round(op.pwf).toLocaleString()+' psi';}
+
+  let fl=`<div class="flag ${r2>0.99?'flag-green':r2>0.95?'flag-amber':'flag-red'}"><span class="flag-icon">${r2>0.99?'✓':r2>0.95?'⚠':'⛔'}</span>R² = ${r2.toFixed(4)} — ${r2>0.99?'Excellent fit.':r2>0.95?'Acceptable fit.':'Poor fit — check data or change model.'}</div>`;
+  if(pts.length<3)fl+=`<div class="flag flag-amber"><span class="flag-icon">⚠</span>Only ${pts.length} test points. Minimum 3 recommended for reliable regression.</div>`;
+  document.getElementById('td_flag').innerHTML=fl;
 
   // IPR table
-  const tableRows = Array.from({length:11},(_,i)=>{
-    const q = qmax_est * i / 10;
-    const pwf = model.includes('Vogel') ? iprVogel(q, qmax_est, pr_est) : iprLinear(q, pr_est, J_est);
-    return `<tr><td>${Math.round(q).toLocaleString()}</td><td>${Math.round(Math.max(0,pwf)).toLocaleString()}</td><td>${(q/qmax_est*100).toFixed(0)}%</td></tr>`;
+  const rows=Array.from({length:11},(_,i)=>{
+    const q=qm_e*i/10,pwf=Math.max(0,iF(q));
+    return`<tr><td>${Math.round(q).toLocaleString()}</td><td>${Math.round(pwf).toLocaleString()}</td><td>${(q/qm_e*100).toFixed(0)}%</td></tr>`;
   }).join('');
-  document.getElementById('td_ipr_table_container').innerHTML = `
-    <table class="data-table"><thead><tr><th>q (STB/d)</th><th>Pwf (psi)</th><th>% AOF</th></tr></thead><tbody>${tableRows}</tbody></table>`;
-
-  let flag = `<div class="flag ${r2>0.99?'flag-green':r2>0.95?'flag-amber':'flag-red'}"><span class="flag-icon">${r2>0.99?'✓':r2>0.95?'⚠':'⛔'}</span>R² = ${r2.toFixed(4)} — ${r2>0.99?'Excellent fit. Model is reliable.':r2>0.95?'Good fit. Acceptable for engineering decisions.':'Poor fit. Check data quality or try a different model.'}</div>`;
-  if (pts.length < 3) flag += `<div class="flag flag-amber"><span class="flag-icon">⚠</span>Only ${pts.length} test points entered. Minimum 3 recommended for reliable IPR fitting. Add a third point at intermediate drawdown.</div>`;
-  document.getElementById('td_flag').innerHTML = flag;
-}
-
-// ── LINEAR FIT ──
-function fitLinear(pts, pr_hint) {
-  let bestJ, bestPr, bestR2 = -Infinity;
-  const pr_range = pr_hint ? [pr_hint] : linspace(pts[pts.length-1].pwf * 1.05, pts[pts.length-1].pwf * 2.5, 50);
-  for (const pr of pr_range) {
-    if (pr <= pts[pts.length-1].pwf) continue;
-    // J from least squares with fixed pr: q = J*(pr-pwf) → J = Σ(q*(pr-pwf)) / Σ((pr-pwf)²)
-    let num=0, den=0;
-    pts.forEach(p => { const dd=pr-p.pwf; num+=p.q*dd; den+=dd*dd; });
-    const J = num/den;
-    if (J <= 0) continue;
-    // R²
-    const mean_q = pts.reduce((s,p)=>s+p.q,0)/pts.length;
-    let ss_res=0, ss_tot=0;
-    pts.forEach(p => { const q_pred=J*(pr-p.pwf); ss_res+=(p.q-q_pred)**2; ss_tot+=(p.q-mean_q)**2; });
-    const r2 = 1 - ss_res/ss_tot;
-    if (r2 > bestR2) { bestR2=r2; bestJ=J; bestPr=pr; }
-  }
-  return { J: bestJ||1, pr: bestPr||pts[pts.length-1].pwf*1.5, r2: bestR2 };
-}
-
-// ── VOGEL FIT ──
-function fitVogel(pts, pr_hint) {
-  let bestQmax, bestPr, bestR2 = -Infinity;
-  const pr_range = pr_hint ? [pr_hint] : linspace(pts[pts.length-1].pwf*1.05, pts[pts.length-1].pwf*3, 50);
-  for (const pr of pr_range) {
-    if (pr <= pts[pts.length-1].pwf) continue;
-    // For each pr, find best qmax
-    const qmax_range = linspace(pts[pts.length-1].q*1.1, pts[pts.length-1].q*4, 50);
-    for (const qmax of qmax_range) {
-      const mean_q = pts.reduce((s,p)=>s+p.q,0)/pts.length;
-      let ss_res=0, ss_tot=0;
-      pts.forEach(p => {
-        const x = p.pwf/pr;
-        const q_pred = qmax*(1-0.2*x-0.8*x*x);
-        ss_res+=(p.q-q_pred)**2; ss_tot+=(p.q-mean_q)**2;
-      });
-      const r2 = 1-ss_res/ss_tot;
-      if (r2 > bestR2) { bestR2=r2; bestQmax=qmax; bestPr=pr; }
-    }
-  }
-  return { qmax: bestQmax||pts[pts.length-1].q*2, pr: bestPr||pts[pts.length-1].pwf*1.5, r2: bestR2 };
-}
-
-function estimatePrLinear(pts) {
-  if (pts.length < 2) return 0;
-  // Simple: extrapolate linear to q=0
-  const p1=pts[0], p2=pts[pts.length-1];
-  const m = (p2.pwf-p1.pwf)/(p2.q-p1.q);
-  return p1.pwf - m*p1.q;
-}
-function estimatePrVogel(pts) { return pts[0].pwf * 1.5; }
-function linspace(a,b,n) { return Array.from({length:n},(_,i)=>a+(b-a)*i/(n-1)); }
-
-// ═══════════════════════════════════════════════════════════════════
-// TAB SWITCHING
-// ═══════════════════════════════════════════════════════════════════
-function switchTab(i) {
-  document.querySelectorAll('.tab-content').forEach((el,j)=>{ el.classList.toggle('active', j===i); });
-  document.querySelectorAll('.tab-btn').forEach((el,j)=>{ el.classList.toggle('active', j===i); });
-  if (i===0) {}
-  else if (i===1) calcCase1();
-  else if (i===2) calcCase2();
-  else if (i===3) calcCase3();
-  else if (i===4) { renderTestPoints(); fitIPR(); }
+  document.getElementById('td_table_body').innerHTML=`<table class="data-table"><thead><tr><th>q (STB/d)</th><th>Pwf (psi)</th><th>% AOF</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 // ═══════════════════════════════════════════════════════════════════
+// TAB SWITCH
+// ═══════════════════════════════════════════════════════════════════
+function switchTab(i){
+  document.querySelectorAll('.tab-content').forEach((el,j)=>el.classList.toggle('active',j===i));
+  document.querySelectorAll('.tab-btn').forEach((el,j)=>el.classList.toggle('active',j===i));
+  if(i===1)calcCase1();
+  else if(i===2)calcCase2();
+  else if(i===3)calcCase3();
+  else if(i===4){renderTP();fitIPR();}
+}
+
 // INIT
-// ═══════════════════════════════════════════════════════════════════
-window.addEventListener('load', () => {
-  renderTestPoints();
-  // Pre-render Case 1 so chart shows immediately when user clicks tab
-});
+window.addEventListener('load',()=>{renderTP();});
 </script>
 </body>
 </html>
